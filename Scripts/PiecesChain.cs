@@ -28,12 +28,11 @@ namespace Bipolar.Match3
 
         public override string ToString() => $"Pieces Chain ({PieceType.name}): {Size}";
 
-        public virtual void DrawGizmo(Board board)
+        public virtual void DrawGizmo(IBoard board)
         {
             foreach (var coord in PiecesCoords)
                 Gizmos.DrawSphere(board.CoordToWorld(coord), 0.3f);
         }
-
     }
 
     public class TriosPiecesChain : PiecesChain

@@ -7,7 +7,7 @@ namespace Bipolar.Match3
 {
     public abstract class Matcher : MonoBehaviour
     {
-        public abstract void FindAndCreatePieceChains(Board board);
+        public abstract void FindAndCreatePieceChains();
         public abstract IReadOnlyList<PiecesChain> PieceChains { get; }
     }
 
@@ -32,21 +32,29 @@ namespace Bipolar.Match3
             Vector2Int.down + Vector2Int.left,
         };
 
+        private TBoard _board;
+        public TBoard Board
+        {
+            get
+            {
+                if (_board == null) 
+                    _board = GetComponent<TBoard>(); 
+                return _board;
+            }
+        }
+
+
         protected readonly List<PiecesChain> pieceChains = new List<PiecesChain>();
         public override IReadOnlyList<PiecesChain> PieceChains => pieceChains;
 
-        public sealed override void FindAndCreatePieceChains(Board board) => FindAndCreatePieceChains(board as TBoard);
-
-        public abstract void FindAndCreatePieceChains(TBoard board);
-
-        protected void CreatePiecesChain(IBoard board, Vector2Int coord, Queue<Vector2Int> coordsToCheck = null)
+        protected void CreatePiecesChain(Vector2Int coord, Queue<Vector2Int> coordsToCheck = null)
         {
             coordsToCheck ??= new Queue<Vector2Int>();
             coordsToCheck.Clear();
             coordsToCheck.Enqueue(coord);
             var chain = new TriosPiecesChain();
-            chain.PieceType = board.GetPiece(coord).Type;
-            FindMatches(board, chain, coordsToCheck);
+            chain.PieceType = Board.GetPiece(coord).Type;
+            FindMatches(Board, chain, coordsToCheck);
 
             if (chain.IsMatchFound)
                 pieceChains.Add(chain);
@@ -124,15 +132,17 @@ namespace Bipolar.Match3
 
         private void OnDrawGizmos()
         {
-            var board = FindObjectOfType<Board>();
-            var random = new System.Random(PieceChains.Count);
-            foreach (var chain in PieceChains)
+            if (Board != null)
             {
-                random.Next();
-                var color = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
-                color.a = 0.5f;
-                Gizmos.color = color;
-                chain.DrawGizmo(board);
+                var random = new System.Random(PieceChains.Count);
+                foreach (var chain in PieceChains)
+                {
+                    random.Next();
+                    var color = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
+                    color.a = 0.5f;
+                    Gizmos.color = color;
+                    chain.DrawGizmo(Board);
+                }
             }
         }
     }

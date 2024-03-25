@@ -87,7 +87,7 @@ namespace Bipolar.Match3
 
         private void FindMatches()
         {
-            matcher.FindAndCreatePieceChains(boardController.Board);
+            matcher.FindAndCreatePieceChains();
 
             combo += matcher.PieceChains.Count;
             foreach (var chain in matcher.PieceChains)

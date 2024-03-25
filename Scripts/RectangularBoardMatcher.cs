@@ -11,8 +11,9 @@ namespace Bipolar.Match3
     {
         private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
 
-        public override void FindAndCreatePieceChains(IRectangularBoard board)
+        public override void FindAndCreatePieceChains()
         {
+            var board = Board;
             pieceChains.Clear();
             for (int j = 0; j < board.Dimensions.y; j++)
             {
@@ -22,7 +23,7 @@ namespace Bipolar.Match3
                     if (pieceChains.FirstOrDefault(chain => chain.Contains(coord)) != null)
                         continue;
 
-                    CreatePiecesChain(board, coord, coordsToCheck);
+                    CreatePiecesChain(coord, coordsToCheck);
                 }
             }
         }
