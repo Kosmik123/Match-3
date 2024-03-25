@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public class RectangularBoardMatcher : Matcher
+    [RequireComponent(typeof(RectangularBoard))]
+    public class RectangularBoardMatcher : Matcher<IRectangularBoard>
     {
         private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
 
-        public override void FindAndCreatePieceChains(Board board) => FindAndCreateTokenChains((RectangularBoard) board);
-        public void FindAndCreateTokenChains(RectangularBoard board)
+        public override void FindAndCreatePieceChains(IRectangularBoard board)
         {
             pieceChains.Clear();
             for (int j = 0; j < board.Dimensions.y; j++)
@@ -22,7 +22,7 @@ namespace Bipolar.Match3
                     if (pieceChains.FirstOrDefault(chain => chain.Contains(coord)) != null)
                         continue;
 
-                    CreateTokensChain(board, coord, coordsToCheck);
+                    CreatePiecesChain(board, coord, coordsToCheck);
                 }
             }
         }

@@ -38,6 +38,11 @@ namespace Bipolar.Match3
 
         private bool hasDragged = false;
 
+        protected virtual void Reset()
+        {
+            board = FindObjectOfType<Board>();   
+        }
+
         private void Awake()
         {
             hasDragged = false;

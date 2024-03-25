@@ -1,10 +1,18 @@
 ﻿using Bipolar.PuzzleBoard;
+using Bipolar.PuzzleBoard.Rectangular;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Bipolar.Match3
 {
     public abstract class Matcher : MonoBehaviour
+    {
+        public abstract void FindAndCreatePieceChains(Board board);
+        public abstract IReadOnlyList<PiecesChain> PieceChains { get; }
+    }
+
+    public abstract class Matcher<TBoard> : Matcher
+        where TBoard : class, IBoard
     {
         private static readonly Vector2Int[] defaultChainsDirections =
         {
@@ -25,11 +33,13 @@ namespace Bipolar.Match3
         };
 
         protected readonly List<PiecesChain> pieceChains = new List<PiecesChain>();
-        public IReadOnlyList<PiecesChain> PieceChains => pieceChains;
+        public override IReadOnlyList<PiecesChain> PieceChains => pieceChains;
 
-        public abstract void FindAndCreatePieceChains(Board board);
+        public sealed override void FindAndCreatePieceChains(Board board) => FindAndCreatePieceChains(board as TBoard);
 
-        protected void CreateTokensChain(Board board, Vector2Int coord, Queue<Vector2Int> coordsToCheck = null)
+        public abstract void FindAndCreatePieceChains(TBoard board);
+
+        protected void CreatePiecesChain(IBoard board, Vector2Int coord, Queue<Vector2Int> coordsToCheck = null)
         {
             coordsToCheck ??= new Queue<Vector2Int>();
             coordsToCheck.Clear();
@@ -42,7 +52,7 @@ namespace Bipolar.Match3
                 pieceChains.Add(chain);
         }
 
-        public static void FindMatches(Board board, TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck)
+        public static void FindMatches(IBoard board, TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck)
         {
             bool isHexagonal = board.Grid.cellLayout == GridLayout.CellLayout.Hexagon;
             while (coordsToCheck.Count > 0)
@@ -60,14 +70,14 @@ namespace Bipolar.Match3
             ? (IReadOnlyList<Vector2Int>)hexagonalChainsDirections
             : defaultChainsDirections;
 
-        public static bool TryAddLineToChain(Board board, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
+        public static bool TryAddLineToChain(IBoard board, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
         {
-            var nearCoord = pieceCoord + Board.GetFixedDirection(pieceCoord, direction, isHexagonal);
+            var nearCoord = pieceCoord + BoardHelper.GetFixedDirection(pieceCoord, direction, isHexagonal);
             var nearToken = board.GetPiece(nearCoord);
             if (nearToken == null || chain.PieceType != nearToken.Type)
                 return false;
 
-            var backCoord = pieceCoord + Board.GetFixedDirection(pieceCoord, -direction, isHexagonal);
+            var backCoord = pieceCoord + BoardHelper.GetFixedDirection(pieceCoord, -direction, isHexagonal);
             var backPiece = board.GetPiece(backCoord);
             if (backPiece && chain.PieceType == backPiece.Type)
             {
@@ -78,7 +88,7 @@ namespace Bipolar.Match3
                 return true;
             }
 
-            var furtherCoord = nearCoord + Board.GetFixedDirection(nearCoord, direction, isHexagonal);
+            var furtherCoord = nearCoord + BoardHelper.GetFixedDirection(nearCoord, direction, isHexagonal);
             var furtherPiece = board.GetPiece(furtherCoord);
             if (furtherPiece && chain.PieceType == furtherPiece.Type)
             {

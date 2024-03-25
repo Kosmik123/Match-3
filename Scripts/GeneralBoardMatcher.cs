@@ -1,17 +1,18 @@
 ﻿using Bipolar.PuzzleBoard;
 using Bipolar.PuzzleBoard.General;
+using Bipolar.PuzzleBoard.Rectangular;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public class GeneralBoardMatcher : Matcher
+    [RequireComponent(typeof(GeneralBoard))]
+    public class GeneralBoardMatcher : Matcher<IGeneralBoard>
     {
         private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
 
-        public override void FindAndCreatePieceChains(Board board) => FindAndCreateTokenChains((GeneralBoard)board);
-        public void FindAndCreateTokenChains(GeneralBoard board)
+        public override void FindAndCreatePieceChains(IGeneralBoard board)
         {
             pieceChains.Clear();
             foreach (var coord in board.Coords)
@@ -19,7 +20,7 @@ namespace Bipolar.Match3
                 if (pieceChains.FirstOrDefault(chain => chain.Contains(coord)) != null)
                     continue;
 
-                CreateTokensChain(board, coord, coordsToCheck);
+                CreatePiecesChain(board, coord, coordsToCheck);
             }
         }
     }

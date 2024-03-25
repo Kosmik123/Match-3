@@ -18,6 +18,13 @@ namespace Bipolar.Match3
         [SerializeField]
         private Vector2Int selectedPieceCoord = -Vector2Int.one;
 
+        protected virtual void Reset()
+        {
+            board = FindObjectOfType<Board>();
+            piecesClickDetector = FindObjectOfType<PiecesClickDetector>();
+            swipeDetector = FindObjectOfType<SwipeDetector>();
+        }
+
         private void OnEnable()
         {
             swipeDetector.OnPieceSwiped += SwipeDetector_OnPieceSwiped;

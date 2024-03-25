@@ -1,4 +1,5 @@
 ﻿using Bipolar.PuzzleBoard;
+using Codice.CM.Client.Differences;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,6 +23,14 @@ namespace Bipolar.Match3
         [SerializeField]
         private int combo;
         public int Combo => combo;
+
+        protected virtual void Reset()
+        {
+            boardController = FindObjectOfType<BoardController>();
+            swapManager = FindObjectOfType<SwapManager>();
+            matcher = FindObjectOfType<Matcher>();
+        }
+
 
         private void OnEnable()
         {
