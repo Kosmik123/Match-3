@@ -9,7 +9,7 @@ namespace Bipolar.Match3
     {
         private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
 
-        public override void FindAndCreatePieceChains()
+        public override void FindAndCreatePieceChains(List<PiecesChain> pieceChains)
         {
             var board = TypedBoard;
             pieceChains.Clear();

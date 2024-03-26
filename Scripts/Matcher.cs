@@ -26,8 +26,7 @@ namespace Bipolar.Match3
         };
 
         public abstract IBoard Board { get; }
-        public abstract void FindAndCreatePieceChains();
-        public abstract IReadOnlyList<PiecesChain> PieceChains { get; }
+        public abstract void FindAndCreatePieceChains(List<PiecesChain> chainList);
 
         public static void AddLineToChain(TriosPiecesChain chain, Vector2Int centerCoord, Vector2Int direction)
         {
@@ -116,8 +115,6 @@ namespace Bipolar.Match3
         }
         public override IBoard Board => TypedBoard;
 
-        protected readonly List<PiecesChain> pieceChains = new List<PiecesChain>();
-        public override IReadOnlyList<PiecesChain> PieceChains => pieceChains;
 
         protected bool TryCreatePiecesChain(Vector2Int coord, out PiecesChain resultChain, Queue<Vector2Int> coordsToCheck = null)
         {
@@ -134,17 +131,17 @@ namespace Bipolar.Match3
 
         private void OnDrawGizmos()
         {
-            if (Board != null)
-            {
-                var random = new System.Random(PieceChains.Count);
-                foreach (var chain in PieceChains)
-                {
-                    var color = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
-                    color.a = 0.5f;
-                    Gizmos.color = color;
-                    chain.DrawGizmo(Board);
-                }
-            }
+            //if (Board != null)
+            //{
+            //    var random = new System.Random(PieceChains.Count);
+            //    foreach (var chain in PieceChains)
+            //    {
+            //        var color = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
+            //        color.a = 0.5f;
+            //        Gizmos.color = color;
+            //        chain.DrawGizmo(Board);
+            //    }
+            //}
         }
     }
 }

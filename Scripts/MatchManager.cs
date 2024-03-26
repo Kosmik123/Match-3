@@ -21,13 +21,14 @@ namespace Bipolar.Match3
         private int combo;
         public int Combo => combo;
 
+        private List<PiecesChain> chainList = new List<PiecesChain>();
+
         protected virtual void Reset()
         {
             boardController = FindObjectOfType<BoardController>();
             swapManager = FindObjectOfType<SwapManager>();
             matcher = FindObjectOfType<Matcher>();
         }
-
 
         private void OnEnable()
         {
@@ -60,7 +61,7 @@ namespace Bipolar.Match3
             {
                 swapEndedCallback = null;
                 FindMatches();
-                bool wasCorrectMove = matcher.PieceChains.Count > 0;
+                bool wasCorrectMove = chainList.Count > 0;
                 if (wasCorrectMove == false)
                 {
                     (boardController.Pieces[pieceCoord1], boardController.Pieces[pieceCoord2]) = (boardController.Pieces[pieceCoord2], boardController.Pieces[pieceCoord1]);
@@ -84,17 +85,17 @@ namespace Bipolar.Match3
 
         private void FindMatches()
         {
-            matcher.FindAndCreatePieceChains();
-            combo += matcher.PieceChains.Count;
-            foreach (var chain in matcher.PieceChains)
+            matcher.FindAndCreatePieceChains(chainList);
+            combo += chainList.Count;
+            foreach (var chain in chainList)
             {
                 OnPiecesMatched?.Invoke(chain);
                 ClearChainPieces(chain);
             }
 
 #if UNITY_EDITOR
-            var colorRandomizer = new System.Random(matcher.PieceChains.Count);
-            foreach (var chain in matcher.PieceChains)
+            var colorRandomizer = new System.Random(chainList.Count);
+            foreach (var chain in chainList)
             {
                 var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
                 color.a = 0.5f;
