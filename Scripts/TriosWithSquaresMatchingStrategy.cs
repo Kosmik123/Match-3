@@ -1,4 +1,5 @@
 ﻿using Bipolar.PuzzleBoard;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,7 +43,60 @@ namespace Bipolar.Match3
     {
         protected override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IBoard board)
         {
+            FindMatches(board, chain, coordsQueue);
+        }
 
+        private void FindMatches(IBoard board, TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue)
+        {
+            bool isHexagonal = board.Grid.cellLayout == GridLayout.CellLayout.Hexagon;
+            while (coordsQueue.Count > 0)
+            {
+                var pieceCoord = coordsQueue.Dequeue();
+                chain.Add(pieceCoord);
+                foreach (var direction in GetLinesDirections(board.Grid.cellLayout))
+                {
+                    TriosMatchingStrategy.TryAddLineToChain(board, chain, pieceCoord, direction, coordsQueue, isHexagonal);
+                }
+
+                if (isHexagonal == false) 
+                {
+                    for (int i = 0; i < defaultChainsDirections.Length; i++)
+                    {
+                        TryAddSquareToChain(board, chain, pieceCoord, i, coordsQueue);
+                    }
+                }
+            }
+        }
+
+        public static bool TryAddSquareToChain(IBoard board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex, Queue<Vector2Int> coordsQueue)
+        {
+            int xMin = pieceCoord.x;
+            int yMin = pieceCoord.y;
+
+            var nextCoord = pieceCoord;
+            for (int i = 0; i < 3; i++)
+            {
+                int coordIndex = (directionIndex + i) % defaultChainsDirections.Length;
+                nextCoord += defaultChainsDirections[coordIndex];
+                var nextPiece = board.GetPiece(nextCoord);
+                if (nextPiece == null || chain.PieceType != nextPiece.Type)
+                    return false;
+
+                if (nextCoord.x < xMin)
+                    xMin = nextCoord.x;
+                if (nextCoord.y < yMin)
+                    yMin = nextCoord.y;
+            }
+
+            chain.IsMatchFound = true;
+            AddSquareToChain(chain, new Vector2Int(xMin, yMin));
+            return true;
+        }
+
+        public static void AddSquareToChain(TriosWithSquaresPiecesChain chain, Vector2Int bottomLeftCoord)
+        {
+            chain.AddSquare(bottomLeftCoord);
         }
     }
+
 }
