@@ -115,7 +115,6 @@ namespace Bipolar.Match3
         }
         public override IBoard Board => TypedBoard;
 
-
         protected bool TryCreatePiecesChain(Vector2Int coord, out PiecesChain resultChain, Queue<Vector2Int> coordsToCheck = null)
         {
             coordsToCheck ??= new Queue<Vector2Int>();

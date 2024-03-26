@@ -6,7 +6,7 @@ namespace Bipolar.Match3
 {
     public class PiecesChain
     {
-        public PieceType PieceType { get; set; }
+        public IPieceType PieceType { get; set; }
 
         protected readonly HashSet<Vector2Int> piecesCoords = new HashSet<Vector2Int>();
         public IReadOnlyCollection<Vector2Int> PiecesCoords => piecesCoords;
@@ -25,7 +25,7 @@ namespace Bipolar.Match3
             piecesCoords.Clear();
         }
 
-        public override string ToString() => $"Pieces Chain ({PieceType.name}): {Size}";
+        public override string ToString() => $"Pieces Chain ({(PieceType as Object).name}): {Size}";
 
         internal virtual void DrawGizmo(IBoard board)
         {
