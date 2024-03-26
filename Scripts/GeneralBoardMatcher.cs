@@ -1,8 +1,5 @@
-﻿using Bipolar.PuzzleBoard;
-using Bipolar.PuzzleBoard.General;
-using Bipolar.PuzzleBoard.Rectangular;
+﻿using Bipolar.PuzzleBoard.General;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Bipolar.Match3
@@ -14,14 +11,15 @@ namespace Bipolar.Match3
 
         public override void FindAndCreatePieceChains()
         {
-            var board = Board;
+            var board = TypedBoard;
             pieceChains.Clear();
             foreach (var coord in board.Coords)
             {
-                if (pieceChains.FirstOrDefault(chain => chain.Contains(coord)) != null)
+                if (pieceChains.Find(chain => chain.Contains(coord)) != null)
                     continue;
 
-                CreatePiecesChain(coord, coordsToCheck);
+                if (TryCreatePiecesChain(coord, out var chain, coordsToCheck))
+                    pieceChains.Add(chain);
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Bipolar.PuzzleBoard;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Bipolar.Match3
@@ -28,11 +27,14 @@ namespace Bipolar.Match3
 
         public override string ToString() => $"Pieces Chain ({PieceType.name}): {Size}";
 
-        public virtual void DrawGizmo(IBoard board)
+        internal virtual void DrawGizmo(IBoard board)
         {
             foreach (var coord in PiecesCoords)
                 Gizmos.DrawSphere(board.CoordToWorld(coord), 0.3f);
         }
+
+        internal virtual void DrawDebug(IBoard board, Color color, float duration)
+        { }
     }
 
     public class TriosPiecesChain : PiecesChain
@@ -60,5 +62,28 @@ namespace Bipolar.Match3
         }
 
         public override string ToString() => $"{base.ToString()}, H: {HorizontalTriosCount}, V: {VerticalTriosCount}";
+
+        internal override void DrawDebug(IBoard board, Color color, float duration)
+        { 
+            base.DrawDebug(board, color, duration);
+            foreach (var coord in horizontalTrios)
+            {
+                var leftCoord = coord + Vector2Int.left;
+                var rightCoord = coord + Vector2Int.right;
+                DrawLine(leftCoord, rightCoord, color, duration);
+            }
+
+            foreach (var coord in verticalTrios)
+            {
+                var downCoord = coord + Vector2Int.up;
+                var upCoord = coord + Vector2Int.down;
+                DrawLine(upCoord, downCoord, color, duration);
+            }
+
+            void DrawLine(Vector2Int startCoord, Vector2Int endCoord, Color color, float duration)
+            {
+                Debug.DrawLine(board.CoordToWorld(startCoord), board.CoordToWorld(endCoord), color, duration);
+            }
+        }
     }
 }

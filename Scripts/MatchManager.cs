@@ -1,12 +1,9 @@
 ﻿using Bipolar.PuzzleBoard;
-using Codice.CM.Client.Differences;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public delegate void PiecesSwapEventHandler(Vector2Int pieceCoord1, Vector2Int pieceCoord2);
-
     public class MatchManager : MonoBehaviour
     {
         public event System.Action OnMatchingFailed;
@@ -88,13 +85,22 @@ namespace Bipolar.Match3
         private void FindMatches()
         {
             matcher.FindAndCreatePieceChains();
-
             combo += matcher.PieceChains.Count;
             foreach (var chain in matcher.PieceChains)
             {
                 OnPiecesMatched?.Invoke(chain);
                 ClearChainPieces(chain);
             }
+
+#if UNITY_EDITOR
+            var colorRandomizer = new System.Random(matcher.PieceChains.Count);
+            foreach (var chain in matcher.PieceChains)
+            {
+                var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
+                color.a = 0.5f;
+                chain.DrawDebug(matcher.Board, color, 1);
+            }
+#endif
         }
 
         private readonly List<Piece> currentlyClearedPieces = new List<Piece>();
@@ -111,9 +117,9 @@ namespace Bipolar.Match3
             foreach (var piece in currentlyClearedPieces)
             {
                 piece.OnCleared += Piece_OnCleared;
-                if (piece.TryGetComponent<PieceClearingBehavior>(out var clearing))
+                if (piece.TryGetComponent<PieceClearingBehavior>(out var pieceClearing))
                 {
-                    clearing.ClearPiece();
+                    pieceClearing.Clear();
                 }
                 else
                 {

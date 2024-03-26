@@ -1,10 +1,10 @@
 ﻿using Bipolar.PuzzleBoard;
-using Bipolar.PuzzleBoard.Rectangular;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Bipolar.Match3
 {
+    [RequireComponent(typeof(Board))]
     public abstract class Matcher : MonoBehaviour
     {
         protected static readonly Vector2Int[] defaultChainsDirections =
@@ -25,9 +25,9 @@ namespace Bipolar.Match3
             Vector2Int.down + Vector2Int.left,
         };
 
+        public abstract IBoard Board { get; }
         public abstract void FindAndCreatePieceChains();
         public abstract IReadOnlyList<PiecesChain> PieceChains { get; }
-
 
         public static void AddLineToChain(TriosPiecesChain chain, Vector2Int centerCoord, Vector2Int direction)
         {
@@ -100,11 +100,12 @@ namespace Bipolar.Match3
         }
     }
 
+    [RequireComponent(typeof(Board))]
     public abstract class Matcher<TBoard> : Matcher
         where TBoard : class, IBoard
     {
         private TBoard _board;
-        public TBoard Board
+        public TBoard TypedBoard
         {
             get
             {
@@ -113,11 +114,12 @@ namespace Bipolar.Match3
                 return _board;
             }
         }
+        public override IBoard Board => TypedBoard;
 
         protected readonly List<PiecesChain> pieceChains = new List<PiecesChain>();
         public override IReadOnlyList<PiecesChain> PieceChains => pieceChains;
 
-        protected void CreatePiecesChain(Vector2Int coord, Queue<Vector2Int> coordsToCheck = null)
+        protected bool TryCreatePiecesChain(Vector2Int coord, out PiecesChain resultChain, Queue<Vector2Int> coordsToCheck = null)
         {
             coordsToCheck ??= new Queue<Vector2Int>();
             coordsToCheck.Clear();
@@ -126,8 +128,8 @@ namespace Bipolar.Match3
             chain.PieceType = Board.GetPiece(coord).Type;
             FindMatches(Board, chain, coordsToCheck);
 
-            if (chain.IsMatchFound)
-                pieceChains.Add(chain);
+            resultChain = chain;
+            return chain.IsMatchFound;
         }
 
         private void OnDrawGizmos()
@@ -137,7 +139,6 @@ namespace Bipolar.Match3
                 var random = new System.Random(PieceChains.Count);
                 foreach (var chain in PieceChains)
                 {
-                    random.Next();
                     var color = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
                     color.a = 0.5f;
                     Gizmos.color = color;

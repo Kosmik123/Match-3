@@ -3,6 +3,8 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
+    public delegate void PiecesSwapEventHandler(Vector2Int pieceCoord1, Vector2Int pieceCoord2);
+ 
     public class SwapManager : MonoBehaviour
     {
         public event PiecesSwapEventHandler OnSwapRequested;

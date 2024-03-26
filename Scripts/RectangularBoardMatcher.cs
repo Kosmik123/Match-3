@@ -1,7 +1,5 @@
-﻿using Bipolar.PuzzleBoard;
-using Bipolar.PuzzleBoard.Rectangular;
+﻿using Bipolar.PuzzleBoard.Rectangular;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Bipolar.Match3
@@ -13,17 +11,18 @@ namespace Bipolar.Match3
 
         public override void FindAndCreatePieceChains()
         {
-            var board = Board;
+            var board = TypedBoard;
             pieceChains.Clear();
             for (int j = 0; j < board.Dimensions.y; j++)
             {
                 for (int i = 0; i < board.Dimensions.x; i++)
                 {
-                    Vector2Int coord = new Vector2Int(i, j);
-                    if (pieceChains.FirstOrDefault(chain => chain.Contains(coord)) != null)
+                    var coord = new Vector2Int(i, j);
+                    if (pieceChains.Find(chain => chain.Contains(coord)) != null)
                         continue;
 
-                    CreatePiecesChain(coord, coordsToCheck);
+                    if (TryCreatePiecesChain(coord, out var chain, coordsToCheck))
+                        pieceChains.Add(chain);
                 }
             }
         }
