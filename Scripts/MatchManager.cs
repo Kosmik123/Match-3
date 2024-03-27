@@ -13,6 +13,8 @@ namespace Bipolar.Match3
         private BoardController boardController;
         [SerializeField]
         private SwapManager swapManager;
+        [SerializeField]
+        private PiecesClearManager piecesClearManager;
 
         [SerializeField]
         private Matcher matcher;
@@ -34,6 +36,7 @@ namespace Bipolar.Match3
         {
             boardController.OnPiecesColapsed += BoardController_OnPiecesColapsed;
             swapManager.OnSwapRequested += SwapManager_OnSwapRequested;
+            piecesClearManager.OnAllPiecesCleared += PiecesClearManager_OnAllPiecesCleared;
         }
 
         private void Start()
@@ -46,7 +49,7 @@ namespace Bipolar.Match3
             if (boardController.ArePiecesMoving || boardController.IsCollapsing)
                 return;
             
-            if (currentlyClearedPieces.Count > 0)
+            if (piecesClearManager.CurrentlyClearedPiecesCount > 0)
                 return;
             
             SwapTokens(pieceCoord1, pieceCoord2);
@@ -83,14 +86,16 @@ namespace Bipolar.Match3
             FindMatches();
         }
 
-        private void FindMatches()
+        public void FindMatches()
         {
             matcher.FindAndCreatePieceChains(chainList);
             combo += chainList.Count;
             foreach (var chain in chainList)
             {
-                OnPiecesMatched?.Invoke(chain);
-                ClearChainPieces(chain);
+                // TODO: Te 2 metody nie mogą być w jednej klasie. Trzeba je rozdzielić
+                OnPiecesMatched?.Invoke(chain); // zostaje tu
+                piecesClearManager.ClearChainPieces(chain); // calluje się z innej klasy po tym evencie
+                // zrobione, bo stworzyłem nową klasę, ale jeszcze potrzeba pozmieniać parę zależności 
             }
 
 #if UNITY_EDITOR
@@ -99,48 +104,21 @@ namespace Bipolar.Match3
             {
                 var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
                 color.a = 0.5f;
-                chain.DrawDebug(matcher.Board, color, 1);
+                chain.DrawDebug(matcher.Board, color, 2);
             }
 #endif
         }
 
-        private readonly List<Piece> currentlyClearedPieces = new List<Piece>();
-        private void ClearChainPieces(PiecesChain chain)
+        private void PiecesClearManager_OnAllPiecesCleared()
         {
-            foreach (var coord in chain.PiecesCoords)
-            {
-                var piece = boardController.Board.GetPiece(coord);
-
-                currentlyClearedPieces.Add(piece);
-                boardController.Pieces[coord] = null;
-            }
-
-            foreach (var piece in currentlyClearedPieces)
-            {
-                piece.OnCleared += Piece_OnCleared;
-                if (piece.TryGetComponent<PieceClearingBehavior>(out var pieceClearing))
-                {
-                    pieceClearing.Clear();
-                }
-                else
-                {
-                    piece.IsCleared = true;
-                }
-            }
-        }
-
-        private void Piece_OnCleared(Piece piece)
-        {
-            piece.OnCleared -= Piece_OnCleared;
-            currentlyClearedPieces.Remove(piece);
-            if (currentlyClearedPieces.Count <= 0)
-                boardController.Collapse();
+            boardController.Collapse();
         }
 
         private void OnDisable()
         {
             boardController.OnPiecesColapsed -= BoardController_OnPiecesColapsed;
             swapManager.OnSwapRequested -= SwapManager_OnSwapRequested;
+            piecesClearManager.OnAllPiecesCleared -= PiecesClearManager_OnAllPiecesCleared;
         }
     }
 }
