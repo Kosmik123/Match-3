@@ -77,12 +77,12 @@ namespace Bipolar.Match3
 
         public static bool TryAddLineToChain(IBoard board, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
         {
-            var nearCoord = pieceCoord + BoardHelper.GetFixedDirection(pieceCoord, direction, isHexagonal);
+            var nearCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, direction, isHexagonal);
             var nearPiece = board.GetPiece(nearCoord);
             if (nearPiece == null || chain.PieceType != nearPiece.Type)
                 return false;
 
-            var backCoord = pieceCoord + BoardHelper.GetFixedDirection(pieceCoord, -direction, isHexagonal);
+            var backCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, -direction, isHexagonal);
             var backPiece = board.GetPiece(backCoord);
             if (backPiece && chain.PieceType == backPiece.Type)
             {
@@ -93,7 +93,7 @@ namespace Bipolar.Match3
                 return true;
             }
 
-            var furtherCoord = nearCoord + BoardHelper.GetFixedDirection(nearCoord, direction, isHexagonal);
+            var furtherCoord = nearCoord + BoardHelper.GetCorrectedDirection(nearCoord, direction, isHexagonal);
             var furtherPiece = board.GetPiece(furtherCoord);
             if (furtherPiece && chain.PieceType == furtherPiece.Type)
             {

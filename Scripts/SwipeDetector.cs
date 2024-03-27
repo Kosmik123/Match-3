@@ -68,7 +68,8 @@ namespace Bipolar.Match3
             if (delta.sqrMagnitude > sqrDragDetectionDistance)
             {
                 hasDragged = true;
-                OnPieceSwiped?.Invoke(pieceCoord, GetDirectionFromMove(pieceCoord, delta));
+                var direction = GetDirectionFromMove(pieceCoord, delta);
+                OnPieceSwiped?.Invoke(pieceCoord, direction);
             }
         }
 
@@ -93,7 +94,8 @@ namespace Bipolar.Match3
             var delta = releaseWorldPosition - pressWorldPosition;
             if (delta.sqrMagnitude > releaseDetectionDistance * releaseDetectionDistance)
             {
-                OnPieceSwiped?.Invoke(pieceCoord, GetDirectionFromMove(pieceCoord, delta));
+                var direction = GetDirectionFromMove(pieceCoord, delta);
+                OnPieceSwiped?.Invoke(pieceCoord, direction);
             }
         }
 
@@ -101,7 +103,7 @@ namespace Bipolar.Match3
         {
             if (disallowDiagonalSwipes)
             {
-                if (Mathf.Abs(moveDelta.x) > Mathf.Abs(moveDelta.y))
+                if (Mathf.Abs(moveDelta.y) < Mathf.Abs(moveDelta.x))
                     moveDelta.y = 0;
                 else
                     moveDelta.x = 0;

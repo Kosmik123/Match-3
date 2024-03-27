@@ -44,10 +44,10 @@ namespace Bipolar.Match3
         private void SwipeDetector_OnPieceSwiped(Vector2Int tokenCoord, Vector2Int direction)
         {
             var otherTokenCoord = tokenCoord + direction;
-            if (board.Contains(otherTokenCoord) == false)
-                return;
-
-            RequestSwap(tokenCoord, otherTokenCoord);
+            if (board.Contains(otherTokenCoord))
+            {
+                RequestSwap(tokenCoord, otherTokenCoord);
+            }
         }
 
         private bool TrySwapSelectedPieces(Vector2Int tokenCoord)
