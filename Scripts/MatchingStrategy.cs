@@ -32,7 +32,6 @@ namespace Bipolar.Match3
 
         public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoard board)
         {
-
             return CreatePiecesChain(board.GetPiece(coordsQueue.Peek()).Type, coordsQueue, board);
         }
 

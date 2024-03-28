@@ -65,20 +65,27 @@ namespace Bipolar.Match3
                 chain.Add(pieceCoord);
                 foreach (var direction in GetLinesDirections(board.Grid.cellLayout))
                 {
-                    TryAddLineToChain(board, chain, pieceCoord, direction, coordsToCheck, isHexagonal);
+                    TryAddLineToChain(board.Data, chain, pieceCoord, direction, coordsToCheck, isHexagonal);
                 }
             }
         }
 
-        public static bool TryAddLineToChain(IBoard board, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
+        public static bool TryAddLineToChain(BoardData boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
         {
             var nearCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, direction, isHexagonal);
-            var nearPiece = board.GetPiece(nearCoord);
+
+            if (boardData.ContainsCoord(nearCoord) == false) 
+                return false;
+
+            var nearPiece = boardData[nearCoord];
             if (nearPiece == null || chain.PieceType != nearPiece.Type)
                 return false;
 
             var backCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, -direction, isHexagonal);
-            var backPiece = board.GetPiece(backCoord);
+            if (boardData.ContainsCoord(backCoord) == false)
+                return false;
+            
+            var backPiece = boardData[backCoord];
             if (backPiece && chain.PieceType == backPiece.Type)
             {
                 chain.IsMatchFound = true;
@@ -89,7 +96,10 @@ namespace Bipolar.Match3
             }
 
             var furtherCoord = nearCoord + BoardHelper.GetCorrectedDirection(nearCoord, direction, isHexagonal);
-            var furtherPiece = board.GetPiece(furtherCoord);
+            if (boardData.ContainsCoord(furtherCoord) == false)
+                return false;
+            
+            var furtherPiece = boardData[furtherCoord];
             if (furtherPiece && chain.PieceType == furtherPiece.Type)
             {
                 chain.IsMatchFound = true;

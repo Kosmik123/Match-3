@@ -49,20 +49,20 @@ namespace Bipolar.Match3
                 chain.Add(pieceCoord);
                 foreach (var direction in GetLinesDirections(board.Grid.cellLayout))
                 {
-                    TriosMatchingStrategy.TryAddLineToChain(board, chain, pieceCoord, direction, coordsQueue, isHexagonal);
+                    TriosMatchingStrategy.TryAddLineToChain(board.Data, chain, pieceCoord, direction, coordsQueue, isHexagonal);
                 }
 
                 if (isHexagonal == false) 
                 {
                     for (int i = 0; i < defaultChainsDirections.Length; i++)
                     {
-                        TryAddSquareToChain(board, chain, pieceCoord, i, coordsQueue);
+                        TryAddSquareToChain(board.Data, chain, pieceCoord, i);
                     }
                 }
             }
         }
 
-        public static bool TryAddSquareToChain(IBoard board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex, Queue<Vector2Int> coordsQueue)
+        public static bool TryAddSquareToChain(BoardData board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
         {
             int xMin = pieceCoord.x;
             int yMin = pieceCoord.y;
@@ -72,7 +72,11 @@ namespace Bipolar.Match3
             {
                 int coordIndex = (directionIndex + i) % defaultChainsDirections.Length;
                 nextCoord += defaultChainsDirections[coordIndex];
-                var nextPiece = board.GetPiece(nextCoord);
+                
+                if (board.ContainsCoord(nextCoord) == false)
+                    return false;
+                
+                var nextPiece = board[nextCoord];
                 if (nextPiece == null || chain.PieceType != nextPiece.Type)
                     return false;
 

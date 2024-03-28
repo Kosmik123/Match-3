@@ -1,4 +1,5 @@
 ﻿using Bipolar.PuzzleBoard;
+using Bipolar.PuzzleBoard.Rectangular;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -75,6 +76,63 @@ namespace Bipolar.Match3
             //        chain.DrawGizmo(Board);
             //    }
             //}
+        }
+    }
+
+    public class MatchPredictor : MonoBehaviour
+    {
+        [SerializeField]
+        private RectangularBoard board;
+
+        public void FindPossibleChains()
+        {
+            bool isHexagonal = board.Grid.cellLayout == GridLayout.CellLayout.Hexagon;
+            var directions = MatchingStrategy.GetLinesDirections(board.Grid.cellLayout);
+            int directionsCount = directions.Count / 2; 
+            
+            for (int y = 0; y < board.Dimensions.y - 1; y++)
+            {
+                for (int x = 0; x < board.Dimensions.x - 1; x++)
+                {
+                    var coord = new Vector2Int(x, y);
+                    for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
+                    {
+                        var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
+                        CheckIfSwappingPieceCreatesMatches(coord, otherCoord, board.Data);
+                    }
+                }
+            }
+        }
+
+        public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, BoardData boardData)
+        { 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            IPieceType GetPieceTypeAtCoord(Vector2Int coord)
+            {
+                if (coord == pieceCoord1)
+                    return boardData[pieceCoord2].Type;
+                
+                if (coord == pieceCoord2)
+                    return boardData[pieceCoord1].Type;
+                
+                return boardData[coord].Type;
+            }
         }
     }
 }
