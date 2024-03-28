@@ -56,7 +56,7 @@ namespace Bipolar.Match3
 
             var pressWorldPosition = eventData.pointerPressRaycast.worldPosition;
             var pieceCoord = board.WorldToCoord(pressWorldPosition);
-            if (board.Contains(pieceCoord) == false)
+            if (board.ContainsCoord(pieceCoord) == false)
                 return;
 
             var pointerCurrentRaycast = eventData.pointerCurrentRaycast;
@@ -83,7 +83,7 @@ namespace Bipolar.Match3
             
             var pressWorldPosition = eventData.pointerPressRaycast.worldPosition;
             var pieceCoord = board.WorldToCoord(pressWorldPosition);
-            if (board.Contains(pieceCoord) == false)
+            if (board.ContainsCoord(pieceCoord) == false)
                 return;
 
             var pointerCurrentRaycast = eventData.pointerCurrentRaycast;

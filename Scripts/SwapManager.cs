@@ -44,7 +44,7 @@ namespace Bipolar.Match3
         private void SwipeDetector_OnPieceSwiped(Vector2Int tokenCoord, Vector2Int direction)
         {
             var otherTokenCoord = tokenCoord + direction;
-            if (board.Contains(otherTokenCoord))
+            if (board.ContainsCoord(otherTokenCoord))
             {
                 RequestSwap(tokenCoord, otherTokenCoord);
             }
@@ -52,7 +52,7 @@ namespace Bipolar.Match3
 
         private bool TrySwapSelectedPieces(Vector2Int tokenCoord)
         {
-            if (board.Contains(selectedPieceCoord) == false)
+            if (board.ContainsCoord(selectedPieceCoord) == false)
                 return false;
 
             var xDistance = Mathf.Abs(tokenCoord.x - selectedPieceCoord.x);
@@ -67,7 +67,7 @@ namespace Bipolar.Match3
         private void SelectPiece(Vector2Int pieceCoord)
         {
             selectedPieceCoord = pieceCoord;
-            if (board.Contains(selectedPieceCoord)) 
+            if (board.ContainsCoord(selectedPieceCoord)) 
                 OnPieceSelected?.Invoke(selectedPieceCoord);
         }
 
