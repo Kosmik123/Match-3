@@ -83,6 +83,8 @@ namespace Bipolar.Match3
     {
         [SerializeField]
         private RectangularBoard board;
+        [SerializeField]
+        private MatchingStrategy matchingStrategy;
 
         public void FindPossibleChains()
         {
@@ -106,18 +108,6 @@ namespace Bipolar.Match3
 
         public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, BoardData boardData)
         { 
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

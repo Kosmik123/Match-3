@@ -58,12 +58,12 @@ namespace Bipolar.Match3
     {
         public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IBoard board)
         {
-            bool isHexagonal = board.Grid.cellLayout == GridLayout.CellLayout.Hexagon;
+            bool isHexagonal = board.Data.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsToCheck.Count > 0)
             {
                 var pieceCoord = coordsToCheck.Dequeue();
                 chain.Add(pieceCoord);
-                foreach (var direction in GetLinesDirections(board.Grid.cellLayout))
+                foreach (var direction in GetLinesDirections(board.Data.Layout))
                 {
                     TryAddLineToChain(board.Data, chain, pieceCoord, direction, coordsToCheck, isHexagonal);
                 }
