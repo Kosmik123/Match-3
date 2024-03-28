@@ -15,11 +15,7 @@ namespace Bipolar.Match3
             pieceChains.Clear();
             foreach (var coord in board.Coords)
             {
-                if (pieceChains.Find(chain => chain.Contains(coord)) != null)
-                    continue;
-
-                if (TryCreatePiecesChain(coord, out var chain, coordsToCheck))
-                    pieceChains.Add(chain);
+                TryAddChainWithCoord(pieceChains, coord, coordsToCheck);
             }
         }
     }

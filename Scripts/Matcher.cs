@@ -40,6 +40,18 @@ namespace Bipolar.Match3
         }
         public override IBoard Board => TypedBoard;
 
+        public bool TryAddChainWithCoord(List<PiecesChain> piecesChains, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
+        {
+            if (piecesChains.Find(chain => chain.Contains(coord)) != null)
+                return false;
+
+            if (TryCreatePiecesChain(coord, out var chain, coordsQueue) == false)
+                return false;
+
+            piecesChains.Add(chain);
+            return true;
+        }
+
         protected bool TryCreatePiecesChain(Vector2Int startingCoord, out PiecesChain resultChain, Queue<Vector2Int> coordsToCheck = null)
         {
             coordsToCheck ??= new Queue<Vector2Int>();
@@ -47,13 +59,6 @@ namespace Bipolar.Match3
             coordsToCheck.Enqueue(startingCoord);
 
             resultChain = MatchingStrategy.GetPiecesChain(coordsToCheck, Board);
-
-            //// matching strategy begin
-            //var chain = new TriosPiecesChain();
-            //chain.PieceType = Board.GetPiece(startingCoord).Type;
-            //DefaultMatchingStrategy.FindMatches(Board, chain, coordsToCheck);
-            //// matching strategy end
-
             return resultChain.IsMatchFound;
         }
 

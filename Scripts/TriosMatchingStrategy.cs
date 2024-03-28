@@ -56,12 +56,7 @@ namespace Bipolar.Match3
 
     public class TriosMatchingStrategy : MatchingStrategy<TriosPiecesChain>
     {
-        protected override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsQueue, IBoard board)
-        {
-            FindMatches(board, chain, coordsQueue);
-        }
-
-        public static void FindMatches(IBoard board, TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck)
+        public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IBoard board)
         {
             bool isHexagonal = board.Grid.cellLayout == GridLayout.CellLayout.Hexagon;
             while (coordsToCheck.Count > 0)
