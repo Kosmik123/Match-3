@@ -88,8 +88,10 @@ namespace Bipolar.Match3
 
         public void FindPossibleChains()
         {
-            bool isHexagonal = board.Grid.cellLayout == GridLayout.CellLayout.Hexagon;
-            var directions = MatchingStrategy.GetLinesDirections(board.Grid.cellLayout);
+            var data = new RectangularBoardData((RectangularBoardData)board.Data);
+
+            bool isHexagonal = data.Layout == GridLayout.CellLayout.Hexagon;
+            var directions = MatchingStrategy.GetLinesDirections(data.Layout);
             int directionsCount = directions.Count / 2; 
             
             for (int y = 0; y < board.Dimensions.y - 1; y++)
@@ -100,18 +102,16 @@ namespace Bipolar.Match3
                     for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
                     {
                         var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
-                        CheckIfSwappingPieceCreatesMatches(coord, otherCoord, board.Data);
+                        CheckIfSwappingPieceCreatesMatches(coord, otherCoord, data);
                     }
                 }
             }
         }
 
         public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, BoardData boardData)
-        { 
-
-
-
-
+        {
+            (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
+            (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
 
             IPieceType GetPieceTypeAtCoord(Vector2Int coord)
             {
