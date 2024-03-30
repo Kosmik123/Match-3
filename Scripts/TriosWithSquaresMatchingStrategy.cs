@@ -42,27 +42,27 @@ namespace Bipolar.Match3
     {
         public override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IBoard board)
         {
-            bool isHexagonal = board.Data.Layout == GridLayout.CellLayout.Hexagon;
+            bool isHexagonal = board.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsQueue.Count > 0)
             {
                 var pieceCoord = coordsQueue.Dequeue();
                 chain.Add(pieceCoord);
-                foreach (var direction in GetLinesDirections(board.Data.Layout))
+                foreach (var direction in GetLinesDirections(board.Layout))
                 {
-                    TriosMatchingStrategy.TryAddLineToChain(board.Data, chain, pieceCoord, direction, coordsQueue, isHexagonal);
+                    TriosMatchingStrategy.TryAddLineToChain(board, chain, pieceCoord, direction, coordsQueue, isHexagonal);
                 }
 
                 if (isHexagonal == false) 
                 {
                     for (int i = 0; i < defaultChainsDirections.Length; i++)
                     {
-                        TryAddSquareToChain(board.Data, chain, pieceCoord, i);
+                        TryAddSquareToChain(board, chain, pieceCoord, i);
                     }
                 }
             }
         }
 
-        public static bool TryAddSquareToChain(BoardData board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
+        public static bool TryAddSquareToChain(IBoard board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
         {
             int xMin = pieceCoord.x;
             int yMin = pieceCoord.y;

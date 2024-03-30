@@ -24,13 +24,16 @@ namespace Bipolar.Match3
             foreach (var coord in chain.PiecesCoords)
             {
                 var piece = boardController.Board.GetPiece(coord);
-
+                
                 currentlyClearedPieces.Add(piece);
                 boardController.Pieces[coord] = null;
             }
 
             foreach (var piece in currentlyClearedPieces)
             {
+                if (piece == null) 
+                    Debug.LogError("null in chain");
+
                 piece.OnCleared += Piece_OnCleared;
                 if (piece.TryGetComponent<PieceClearingBehavior>(out var pieceClearing))
                 {

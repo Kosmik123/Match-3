@@ -58,19 +58,19 @@ namespace Bipolar.Match3
     {
         public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IBoard board)
         {
-            bool isHexagonal = board.Data.Layout == GridLayout.CellLayout.Hexagon;
+            bool isHexagonal = board.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsToCheck.Count > 0)
             {
                 var pieceCoord = coordsToCheck.Dequeue();
                 chain.Add(pieceCoord);
-                foreach (var direction in GetLinesDirections(board.Data.Layout))
+                foreach (var direction in GetLinesDirections(board.Layout))
                 {
-                    TryAddLineToChain(board.Data, chain, pieceCoord, direction, coordsToCheck, isHexagonal);
+                    TryAddLineToChain(board, chain, pieceCoord, direction, coordsToCheck, isHexagonal);
                 }
             }
         }
 
-        public static bool TryAddLineToChain(BoardData boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
+        public static bool TryAddLineToChain(IBoard boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
         {
             var nearCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, direction, isHexagonal);
 

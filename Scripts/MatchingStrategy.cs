@@ -32,7 +32,7 @@ namespace Bipolar.Match3
 
         public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoard board)
         {
-            return CreatePiecesChain(board.GetPiece(coordsQueue.Peek()).Color, coordsQueue, board);
+            return CreatePiecesChain(board[coordsQueue.Peek()].Color, coordsQueue, board);
         }
 
         public static bool TryEnqueueCoord(PiecesChain chain, Queue<Vector2Int> coordsQueue, Vector2Int coord)

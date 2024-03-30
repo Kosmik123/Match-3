@@ -1,5 +1,4 @@
 ﻿using Bipolar.PuzzleBoard;
-using Bipolar.PuzzleBoard.Rectangular;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ namespace Bipolar.Match3
         public MatchingStrategy MatchingStrategy
         {
             get => matchingStrategy;
-            set => matchingStrategy = value;
+            private set => matchingStrategy = value;
         }
 
         protected virtual void Reset()
@@ -62,38 +61,32 @@ namespace Bipolar.Match3
         }
     }
 
-
-
     public class MatchPredictor : MonoBehaviour
     {
         [SerializeField]
-        private RectangularBoard board;
+        private Board board;
         [SerializeField]
         private MatchingStrategy matchingStrategy;
 
         public void FindPossibleChains()
         {
-            var data = new RectangularBoardData((RectangularBoardData)board.Data);
+            var data = board.GetBoardState();
 
             bool isHexagonal = data.Layout == GridLayout.CellLayout.Hexagon;
             var directions = MatchingStrategy.GetLinesDirections(data.Layout);
             int directionsCount = directions.Count / 2; 
             
-            for (int y = 0; y < board.Dimensions.y - 1; y++)
+            foreach (var coord in board)
             {
-                for (int x = 0; x < board.Dimensions.x - 1; x++)
+                for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
                 {
-                    var coord = new Vector2Int(x, y);
-                    for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
-                    {
-                        var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
-                        CheckIfSwappingPieceCreatesMatches(coord, otherCoord, data);
-                    }
+                    var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
+                    CheckIfSwappingPieceCreatesMatches(coord, otherCoord, data);
                 }
             }
         }
 
-        public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, BoardData boardData)
+        public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, BoardState boardData)
         {
             (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
             (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
