@@ -6,7 +6,7 @@ namespace Bipolar.Match3
 {
     public class PiecesChain
     {
-        public IPieceType PieceType { get; set; }
+        public IPieceColor PieceType { get; set; }
 
         protected readonly HashSet<Vector2Int> piecesCoords = new HashSet<Vector2Int>();
         public IReadOnlyCollection<Vector2Int> PiecesCoords => piecesCoords;

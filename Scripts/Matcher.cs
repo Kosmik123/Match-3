@@ -5,9 +5,11 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    [RequireComponent(typeof(Board))]
-    public abstract class Matcher : MonoBehaviour
+    public class Matcher : MonoBehaviour
     {
+        [SerializeField]
+        private Board board;
+
         [SerializeField]
         private MatchingStrategy matchingStrategy;
         public MatchingStrategy MatchingStrategy
@@ -16,30 +18,15 @@ namespace Bipolar.Match3
             set => matchingStrategy = value;
         }
 
+        protected virtual void Reset()
+        {
+            board = FindObjectOfType<Board>();
+        }
+
         public void SetMatchingStrategy<T>() where T : MatchingStrategy
         {
             matchingStrategy = ScriptableObject.CreateInstance<MatchingStrategy>();
         }
-
-        public abstract IBoard Board { get; }
-        public abstract void FindAndCreatePieceChains(List<PiecesChain> chainList);
-    }
-
-    [RequireComponent(typeof(Board))]
-    public abstract class Matcher<TBoard> : Matcher
-        where TBoard : class, IBoard
-    {
-        private TBoard _board;
-        public TBoard TypedBoard
-        {
-            get
-            {
-                if (_board == null) 
-                    _board = GetComponent<TBoard>(); 
-                return _board;
-            }
-        }
-        public override IBoard Board => TypedBoard;
 
         public bool TryAddChainWithCoord(List<PiecesChain> piecesChains, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
         {
@@ -59,25 +46,23 @@ namespace Bipolar.Match3
             coordsToCheck.Clear();
             coordsToCheck.Enqueue(startingCoord);
 
-            resultChain = MatchingStrategy.GetPiecesChain(coordsToCheck, Board);
+            resultChain = MatchingStrategy.GetPiecesChain(coordsToCheck, board);
             return resultChain.IsMatchFound;
         }
 
-        private void OnDrawGizmos()
+        private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
+
+        public void FindAndCreatePieceChains(List<PiecesChain> pieceChains)
         {
-            //if (Board != null)
-            //{
-            //    var random = new System.Random(PieceChains.Count);
-            //    foreach (var chain in PieceChains)
-            //    {
-            //        var color = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
-            //        color.a = 0.5f;
-            //        Gizmos.color = color;
-            //        chain.DrawGizmo(Board);
-            //    }
-            //}
+            pieceChains.Clear();
+            foreach (var coord in board)
+            {
+                TryAddChainWithCoord(pieceChains, coord, coordsToCheck);
+            }
         }
     }
+
+
 
     public class MatchPredictor : MonoBehaviour
     {
@@ -113,15 +98,15 @@ namespace Bipolar.Match3
             (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
             (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
 
-            IPieceType GetPieceTypeAtCoord(Vector2Int coord)
+            IPieceColor GetPieceTypeAtCoord(Vector2Int coord)
             {
                 if (coord == pieceCoord1)
-                    return boardData[pieceCoord2].Type;
+                    return boardData[pieceCoord2].Color;
                 
                 if (coord == pieceCoord2)
-                    return boardData[pieceCoord1].Type;
+                    return boardData[pieceCoord1].Color;
                 
-                return boardData[coord].Type;
+                return boardData[coord].Color;
             }
         }
     }

@@ -67,7 +67,7 @@ namespace Bipolar.Match3
             {
                 var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
                 color.a = 0.5f;
-                chain.DrawDebug(matcher.Board, color, 2);
+                chain.DrawDebug(boardController.Board, color, 2);
             }
 #endif
         }

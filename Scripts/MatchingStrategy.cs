@@ -24,7 +24,7 @@ namespace Bipolar.Match3
             Vector2Int.down + Vector2Int.right,
         };
 
-        protected abstract PiecesChain CreatePiecesChain(IPieceType pieceType, Queue<Vector2Int> coordsToCheck, IBoard board);
+        protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoard board);
 
         public static IReadOnlyList<Vector2Int> GetLinesDirections(GridLayout.CellLayout layout) => layout == GridLayout.CellLayout.Hexagon
             ? (IReadOnlyList<Vector2Int>)hexagonalChainsDirections
@@ -32,7 +32,7 @@ namespace Bipolar.Match3
 
         public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoard board)
         {
-            return CreatePiecesChain(board.GetPiece(coordsQueue.Peek()).Type, coordsQueue, board);
+            return CreatePiecesChain(board.GetPiece(coordsQueue.Peek()).Color, coordsQueue, board);
         }
 
         public static bool TryEnqueueCoord(PiecesChain chain, Queue<Vector2Int> coordsQueue, Vector2Int coord)
@@ -51,7 +51,7 @@ namespace Bipolar.Match3
     public abstract class MatchingStrategy<T> : MatchingStrategy
         where T : PiecesChain, new()
     {
-        protected sealed override PiecesChain CreatePiecesChain(IPieceType pieceType, Queue<Vector2Int> coordsToCheck, IBoard board)
+        protected sealed override PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoard board)
         {
             var chain = new T();
             chain.PieceType = pieceType;

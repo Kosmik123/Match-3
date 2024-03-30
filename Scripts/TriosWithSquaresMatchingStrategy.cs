@@ -77,7 +77,7 @@ namespace Bipolar.Match3
                     return false;
                 
                 var nextPiece = board[nextCoord];
-                if (nextPiece == null || chain.PieceType != nextPiece.Type)
+                if (nextPiece == null || chain.PieceType != nextPiece.Color)
                     return false;
 
                 if (nextCoord.x < xMin)
