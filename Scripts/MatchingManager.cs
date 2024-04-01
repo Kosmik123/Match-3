@@ -18,6 +18,9 @@ namespace Bipolar.Match3
         private int combo;
         public int Combo => combo;
 
+        [SerializeField]
+        private MatchPredictor testMatchPredictor;
+
         protected virtual void Reset()
         {
             boardController = FindObjectOfType<BoardController>();
@@ -65,6 +68,7 @@ namespace Bipolar.Match3
         private void PiecesClearManager_OnAllPiecesCleared()
         {
             boardController.Collapse();
+            testMatchPredictor?.FindPossibleChains();
         }
 
         private void OnDisable()

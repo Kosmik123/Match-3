@@ -4,7 +4,12 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public abstract class MatchingStrategy : ScriptableObject
+    public interface IMatchingStrategy
+    {
+        PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoardState board);
+    }
+
+    public abstract class MatchingStrategy : ScriptableObject, IMatchingStrategy
     {
         public static readonly Vector2Int[] defaultChainsDirections =
         {
@@ -24,13 +29,13 @@ namespace Bipolar.Match3
             Vector2Int.down + Vector2Int.right,
         };
 
-        protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoard board);
+        protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoardState board);
 
         public static IReadOnlyList<Vector2Int> GetLinesDirections(GridLayout.CellLayout layout) => layout == GridLayout.CellLayout.Hexagon
             ? (IReadOnlyList<Vector2Int>)hexagonalChainsDirections
             : defaultChainsDirections;
 
-        public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoard board)
+        public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoardState board)
         {
             return CreatePiecesChain(board[coordsQueue.Peek()].Color, coordsQueue, board);
         }
@@ -51,14 +56,20 @@ namespace Bipolar.Match3
     public abstract class MatchingStrategy<T> : MatchingStrategy
         where T : PiecesChain, new()
     {
-        protected sealed override PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoard board)
+        protected sealed override PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoardState board)
         {
-            var chain = new T();
-            chain.PieceType = pieceType;
+            var chain = CreatePiecesChain(pieceType); 
             PopulatePiecesChain(chain, coordsToCheck, board);
             return chain;
         }
 
-        public abstract void PopulatePiecesChain(T chain, Queue<Vector2Int> coordsToCheck, IBoard board);
+        private static T CreatePiecesChain(IPieceColor pieceType)
+        {
+            var chain = new T();
+            chain.PieceType = pieceType;
+            return chain;
+        }
+
+        public abstract void PopulatePiecesChain(T chain, Queue<Vector2Int> coordsToCheck, IBoardState board);
     }
 }

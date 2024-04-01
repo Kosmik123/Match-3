@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 namespace Bipolar.Match3
 {
     public class SwipeDetector : MonoBehaviour, IDragHandler, IEndDragHandler
-    {
+    { 
         public delegate void TokenSwipeEventHandler(Vector2Int pieceCoord, Vector2Int direction);
         public event TokenSwipeEventHandler OnPieceSwiped;
 

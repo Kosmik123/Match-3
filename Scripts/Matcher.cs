@@ -8,13 +8,14 @@ namespace Bipolar.Match3
     {
         [SerializeField]
         private Board board;
+        public Board Board => board;
 
         [SerializeField]
         private MatchingStrategy matchingStrategy;
-        public MatchingStrategy MatchingStrategy
+        public IMatchingStrategy MatchingStrategy
         {
             get => matchingStrategy;
-            private set => matchingStrategy = value;
+            private set => matchingStrategy = (MatchingStrategy)value;
         }
 
         protected virtual void Reset()
@@ -24,7 +25,7 @@ namespace Bipolar.Match3
 
         public void SetMatchingStrategy<T>() where T : MatchingStrategy
         {
-            matchingStrategy = ScriptableObject.CreateInstance<MatchingStrategy>();
+            matchingStrategy = ScriptableObject.CreateInstance<T>();
         }
 
         public bool TryAddChainWithCoord(List<PiecesChain> piecesChains, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
@@ -57,49 +58,6 @@ namespace Bipolar.Match3
             foreach (var coord in board)
             {
                 TryAddChainWithCoord(pieceChains, coord, coordsToCheck);
-            }
-        }
-    }
-
-    public class MatchPredictor : MonoBehaviour
-    {
-        [SerializeField]
-        private Board board;
-        [SerializeField]
-        private MatchingStrategy matchingStrategy;
-
-        public void FindPossibleChains()
-        {
-            var data = board.GetBoardState();
-
-            bool isHexagonal = data.Layout == GridLayout.CellLayout.Hexagon;
-            var directions = MatchingStrategy.GetLinesDirections(data.Layout);
-            int directionsCount = directions.Count / 2; 
-            
-            foreach (var coord in board)
-            {
-                for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
-                {
-                    var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
-                    CheckIfSwappingPieceCreatesMatches(coord, otherCoord, data);
-                }
-            }
-        }
-
-        public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, BoardState boardData)
-        {
-            (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
-            (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
-
-            IPieceColor GetPieceTypeAtCoord(Vector2Int coord)
-            {
-                if (coord == pieceCoord1)
-                    return boardData[pieceCoord2].Color;
-                
-                if (coord == pieceCoord2)
-                    return boardData[pieceCoord1].Color;
-                
-                return boardData[coord].Color;
             }
         }
     }
