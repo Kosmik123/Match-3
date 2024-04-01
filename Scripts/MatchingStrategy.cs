@@ -11,29 +11,7 @@ namespace Bipolar.Match3
 
     public abstract class MatchingStrategy : ScriptableObject, IMatchingStrategy
     {
-        public static readonly Vector2Int[] defaultChainsDirections =
-        {
-            Vector2Int.right,
-            Vector2Int.up,
-            Vector2Int.left,
-            Vector2Int.down
-        };
-
-        public static readonly Vector2Int[] hexagonalChainsDirections =
-        {
-            Vector2Int.right,
-            Vector2Int.up + Vector2Int.right,
-            Vector2Int.up + Vector2Int.left,
-            Vector2Int.left,
-            Vector2Int.down + Vector2Int.left,
-            Vector2Int.down + Vector2Int.right,
-        };
-
         protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoardState board);
-
-        public static IReadOnlyList<Vector2Int> GetLinesDirections(GridLayout.CellLayout layout) => layout == GridLayout.CellLayout.Hexagon
-            ? (IReadOnlyList<Vector2Int>)hexagonalChainsDirections
-            : defaultChainsDirections;
 
         public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoardState board)
         {

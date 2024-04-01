@@ -14,7 +14,7 @@ namespace Bipolar.Match3
             var boardData = matcher.Board.GetBoardState();
 
             bool isHexagonal = boardData.Layout == GridLayout.CellLayout.Hexagon;
-            var directions = MatchingStrategy.GetLinesDirections(boardData.Layout);
+            var directions = BoardHelper.GetDirections(boardData.Layout);
             int directionsCount = directions.Count / 2; 
 
             foreach (var coord in matcher.Board)

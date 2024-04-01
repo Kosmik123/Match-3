@@ -47,14 +47,14 @@ namespace Bipolar.Match3
             {
                 var pieceCoord = coordsQueue.Dequeue();
                 chain.Add(pieceCoord);
-                foreach (var direction in GetLinesDirections(board.Layout))
+                foreach (var direction in BoardHelper.GetDirections(board.Layout))
                 {
                     TriosMatchingStrategy.TryAddLineToChain(board, chain, pieceCoord, direction, coordsQueue, isHexagonal);
                 }
 
                 if (isHexagonal == false) 
                 {
-                    for (int i = 0; i < defaultChainsDirections.Length; i++)
+                    for (int i = 0; i < BoardHelper.defaultBoardDirections.Length; i++)
                     {
                         TryAddSquareToChain(board, chain, pieceCoord, i);
                     }
@@ -70,8 +70,8 @@ namespace Bipolar.Match3
             var nextCoord = pieceCoord;
             for (int i = 0; i < 3; i++)
             {
-                int coordIndex = (directionIndex + i) % defaultChainsDirections.Length;
-                nextCoord += defaultChainsDirections[coordIndex];
+                int coordIndex = (directionIndex + i) % BoardHelper.defaultBoardDirections.Length;
+                nextCoord += BoardHelper.defaultBoardDirections[coordIndex];
                 
                 if (board.ContainsCoord(nextCoord) == false)
                     return false;

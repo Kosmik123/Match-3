@@ -63,7 +63,7 @@ namespace Bipolar.Match3
             {
                 var pieceCoord = coordsToCheck.Dequeue();
                 chain.Add(pieceCoord);
-                foreach (var direction in GetLinesDirections(board.Layout))
+                foreach (var direction in BoardHelper.GetDirections(board.Layout))
                 {
                     TryAddLineToChain(board, chain, pieceCoord, direction, coordsToCheck, isHexagonal);
                 }
