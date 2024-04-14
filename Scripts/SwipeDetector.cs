@@ -10,7 +10,7 @@ namespace Bipolar.Match3
         public event TokenSwipeEventHandler OnPieceSwiped;
 
         [SerializeField]
-        private Board board;
+        private BoardComponent board;
 
         [SerializeField]
         private float releaseDetectionDistance = 0.5f;
@@ -40,7 +40,7 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            board = FindObjectOfType<Board>();   
+            board = FindObjectOfType<BoardComponent>();   
         }
 
         private void Awake()

@@ -11,7 +11,7 @@ namespace Bipolar.Match3
         [SerializeField]
         private BoardController boardController;
 
-        private readonly List<Piece> currentlyClearedPieces = new List<Piece>();
+        private readonly List<PieceComponent> currentlyClearedPieces = new List<PieceComponent>();
         public int CurrentlyClearedPiecesCount => currentlyClearedPieces.Count;
 
         protected virtual void Reset()
@@ -23,10 +23,10 @@ namespace Bipolar.Match3
         {
             foreach (var coord in chain.PiecesCoords)
             {
-                var piece = boardController.Board.GetPiece(coord);
+                var piece = boardController.BoardComponent.GetPiece(coord);
                 
                 currentlyClearedPieces.Add(piece);
-                boardController.Pieces[coord] = null;
+                boardController.BoardComponent.Board[coord] = null;
             }
 
             foreach (var piece in currentlyClearedPieces)
@@ -46,7 +46,7 @@ namespace Bipolar.Match3
             }
         }
 
-        private void Piece_OnCleared(Piece piece)
+        private void Piece_OnCleared(PieceComponent piece)
         {
             piece.OnCleared -= Piece_OnCleared;
             currentlyClearedPieces.Remove(piece);

@@ -44,7 +44,7 @@ namespace Bipolar.Match3
 
         private void SwapPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
-            (boardController.Pieces[pieceCoord2], boardController.Pieces[pieceCoord1]) = (boardController.Pieces[pieceCoord1], boardController.Pieces[pieceCoord2]);
+            (boardController.BoardComponent.Board[pieceCoord2], boardController.BoardComponent.Board[pieceCoord1]) = (boardController.BoardComponent.Board[pieceCoord1], boardController.BoardComponent.Board[pieceCoord2]);
         }
 
         private void PiecesMovementManager_OnAllPiecesMovementStopped()
@@ -67,7 +67,7 @@ namespace Bipolar.Match3
             {
                 var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
                 color.a = 0.5f;
-                chain.DrawDebug(boardController.Board, color, 2);
+                chain.DrawDebug(boardController.BoardComponent, color, 2);
             }
 #endif
         }

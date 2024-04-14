@@ -30,7 +30,7 @@ namespace Bipolar.Match3
 
         public override string ToString() => $"{base.ToString()}, H: {HorizontalTriosCount}, V: {VerticalTriosCount}";
 
-        internal override void DrawDebug(IBoard board, Color color, float duration)
+        internal override void DrawDebug(IReadOnlyBoardComponent board, Color color, float duration)
         {
             base.DrawDebug(board, color, duration);
             foreach (var coord in horizontalTrios)
@@ -48,7 +48,7 @@ namespace Bipolar.Match3
             }
         }
 
-        protected void DrawDebugLine(Vector2Int startCoord, Vector2Int endCoord, Color color, float duration, IBoard board)
+        protected void DrawDebugLine(Vector2Int startCoord, Vector2Int endCoord, Color color, float duration, IReadOnlyBoardComponent board)
         {
             Debug.DrawLine(board.CoordToWorld(startCoord), board.CoordToWorld(endCoord), color, duration);
         }
@@ -56,7 +56,7 @@ namespace Bipolar.Match3
 
     public class TriosMatchingStrategy : MatchingStrategy<TriosPiecesChain>
     {
-        public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IBoardState board)
+        public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IBoard board)
         {
             bool isHexagonal = board.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsToCheck.Count > 0)
@@ -70,7 +70,7 @@ namespace Bipolar.Match3
             }
         }
 
-        public static bool TryAddLineToChain(IBoardState boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
+        public static bool TryAddLineToChain(IBoard boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
         {
             var nearCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, direction, isHexagonal);
 
@@ -86,7 +86,7 @@ namespace Bipolar.Match3
                 return false;
             
             var backPiece = boardData[backCoord];
-            if (backPiece && chain.PieceType == backPiece.Color)
+            if (backPiece != null && (chain.PieceType == backPiece.Color))
             {
                 chain.IsMatchFound = true;
                 TryEnqueueCoord(chain, coordsToCheck, nearCoord);
@@ -100,7 +100,7 @@ namespace Bipolar.Match3
                 return false;
             
             var furtherPiece = boardData[furtherCoord];
-            if (furtherPiece && chain.PieceType == furtherPiece.Color)
+            if (furtherPiece != null && (chain.PieceType == furtherPiece.Color))
             {
                 chain.IsMatchFound = true;
                 TryEnqueueCoord(chain, coordsToCheck, nearCoord);

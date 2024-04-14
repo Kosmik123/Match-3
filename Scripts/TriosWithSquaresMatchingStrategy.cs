@@ -22,7 +22,7 @@ namespace Bipolar.Match3
             squares.Clear();
         }
 
-        internal override void DrawDebug(IBoard board, Color color, float duration)
+        internal override void DrawDebug(IReadOnlyBoardComponent board, Color color, float duration)
         {
             base.DrawDebug(board, color, duration);
             foreach (var bottomLeft in squares)
@@ -40,7 +40,7 @@ namespace Bipolar.Match3
 
     public class TriosWithSquaresMatchingStrategy : MatchingStrategy<TriosWithSquaresPiecesChain>
     {
-        public override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IBoardState board)
+        public override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IBoard board)
         {
             bool isHexagonal = board.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsQueue.Count > 0)
@@ -62,7 +62,7 @@ namespace Bipolar.Match3
             }
         }
 
-        public static bool TryAddSquareToChain(IBoardState board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
+        public static bool TryAddSquareToChain(IBoard board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
         {
             int xMin = pieceCoord.x;
             int yMin = pieceCoord.y;
