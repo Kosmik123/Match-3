@@ -1,5 +1,4 @@
-﻿using Bipolar.PuzzleBoard;
-using Bipolar.PuzzleBoard.Components;
+﻿using Bipolar.PuzzleBoard.Components;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,14 +19,12 @@ namespace Bipolar.Match3
             boardController = FindObjectOfType<BoardController>();
         }
 
-        public void ClearChainPieces(PiecesChain chain)
+        public void ClearPiecesInChain(PiecesChain chain)
         {
             foreach (var coord in chain.PiecesCoords)
             {
-                var piece = boardController.BoardComponent.GetPiece(coord);
-                
+                var piece = boardController.BoardComponent.GetPieceComponent(coord);
                 currentlyClearedPieces.Add(piece);
-                boardController.BoardComponent.Board[coord] = null;
             }
 
             foreach (var piece in currentlyClearedPieces)

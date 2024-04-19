@@ -41,7 +41,7 @@ namespace Bipolar.Match3
 
     public class TriosWithSquaresMatchingStrategy : MatchingStrategy<TriosWithSquaresPiecesChain>
     {
-        public override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IBoard board)
+        public override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IReadOnlyBoard board)
         {
             bool isHexagonal = board.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsQueue.Count > 0)
@@ -63,7 +63,7 @@ namespace Bipolar.Match3
             }
         }
 
-        public static bool TryAddSquareToChain(IBoard board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
+        public static bool TryAddSquareToChain(IReadOnlyBoard board, TriosWithSquaresPiecesChain chain, Vector2Int pieceCoord, int directionIndex)
         {
             int xMin = pieceCoord.x;
             int yMin = pieceCoord.y;

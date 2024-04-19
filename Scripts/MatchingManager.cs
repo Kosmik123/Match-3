@@ -40,7 +40,7 @@ namespace Bipolar.Match3
         private void MatchController_OnPiecesMatched(PiecesChain chain)
         {
             combo++;
-            piecesClearManager.ClearChainPieces(chain);
+            piecesClearManager.ClearPiecesInChain(chain);
         }
 
         private void Start()
@@ -50,6 +50,7 @@ namespace Bipolar.Match3
 
         private void SwapManager_OnSwapRequested(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
+            Debug.Log($"Swap of {pieceCoord1} and {pieceCoord2} requested");
             if (boardController.ArePiecesMoving || boardController.IsCollapsing)
                 return;
             
@@ -57,7 +58,7 @@ namespace Bipolar.Match3
                 return;
 
             combo = 0;
-            matchController.StartSwappingTokens(pieceCoord1, pieceCoord2);
+            matchController.StartSwappingPieces(pieceCoord1, pieceCoord2);
         }
 
         private void BoardController_OnPiecesColapsed()

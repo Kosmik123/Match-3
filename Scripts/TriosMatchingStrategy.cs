@@ -57,7 +57,7 @@ namespace Bipolar.Match3
 
     public class TriosMatchingStrategy : MatchingStrategy<TriosPiecesChain>
     {
-        public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IBoard board)
+        public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board)
         {
             bool isHexagonal = board.Layout == GridLayout.CellLayout.Hexagon;
             while (coordsToCheck.Count > 0)
@@ -71,7 +71,7 @@ namespace Bipolar.Match3
             }
         }
 
-        public static bool TryAddLineToChain(IBoard boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
+        public static bool TryAddLineToChain(IReadOnlyBoard boardData, TriosPiecesChain chain, Vector2Int pieceCoord, Vector2Int direction, Queue<Vector2Int> coordsToCheck, bool isHexagonal)
         {
             var nearCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, direction, isHexagonal);
 

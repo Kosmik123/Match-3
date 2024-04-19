@@ -7,8 +7,8 @@ namespace Bipolar.Match3
     public class Matcher : MonoBehaviour
     {
         [SerializeField]
-        private BoardComponent board;
-        public BoardComponent Board => board;
+        private BoardComponent boardComponent;
+        public BoardComponent Board => boardComponent;
 
         [SerializeField]
         private MatchingStrategy matchingStrategy;
@@ -20,7 +20,7 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            board = FindObjectOfType<BoardComponent>();
+            boardComponent = FindObjectOfType<BoardComponent>();
         }
 
         public void SetMatchingStrategy<T>() where T : MatchingStrategy
@@ -46,7 +46,7 @@ namespace Bipolar.Match3
             coordsToCheck.Clear();
             coordsToCheck.Enqueue(startingCoord);
 
-            resultChain = MatchingStrategy.GetPiecesChain(coordsToCheck, board.Board);
+            resultChain = MatchingStrategy.GetPiecesChain(coordsToCheck, boardComponent.Board);
             return resultChain.IsMatchFound;
         }
 
@@ -55,7 +55,7 @@ namespace Bipolar.Match3
         public void FindAndCreatePieceChains(List<PiecesChain> pieceChains)
         {
             pieceChains.Clear();
-            foreach (var coord in board)
+            foreach (var coord in boardComponent)
             {
                 TryAddChainWithCoord(pieceChains, coord, coordsToCheck);
             }

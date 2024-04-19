@@ -6,14 +6,14 @@ namespace Bipolar.Match3
 {
     public interface IMatchingStrategy
     {
-        PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoard board);
+        PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IReadOnlyBoard board);
     }
 
     public abstract class MatchingStrategy : ScriptableObject, IMatchingStrategy
     {
-        protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoard board);
+        protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
 
-        public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IBoard board)
+        public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IReadOnlyBoard board)
         {
             return CreatePiecesChain(board[coordsQueue.Peek()].Color, coordsQueue, board);
         }
@@ -34,7 +34,7 @@ namespace Bipolar.Match3
     public abstract class MatchingStrategy<T> : MatchingStrategy
         where T : PiecesChain, new()
     {
-        protected sealed override PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IBoard board)
+        protected sealed override PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board)
         {
             var chain = CreatePiecesChain(pieceType); 
             PopulatePiecesChain(chain, coordsToCheck, board);
@@ -48,6 +48,6 @@ namespace Bipolar.Match3
             return chain;
         }
 
-        public abstract void PopulatePiecesChain(T chain, Queue<Vector2Int> coordsToCheck, IBoard board);
+        public abstract void PopulatePiecesChain(T chain, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
     }
 }

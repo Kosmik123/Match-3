@@ -1,4 +1,5 @@
 ﻿using Bipolar.PuzzleBoard.Components;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace Bipolar.Match3
             matcher = FindObjectOfType<Matcher>();
         }
 
-        public void StartSwappingTokens(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        public void StartSwappingPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
             boardController.PiecesMovementManager.OnAllPiecesMovementStopped += PiecesMovementManager_OnAllPiecesMovementStopped;
             swapEndedCallback = () =>
@@ -40,11 +41,27 @@ namespace Bipolar.Match3
             };
 
             SwapPieces(pieceCoord1, pieceCoord2);
+
+            StartCoroutine(TEST_CheckMatchesAfterSwapping(pieceCoord1, pieceCoord2));
+        }
+
+
+        private IEnumerator TEST_CheckMatchesAfterSwapping(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        {
+            yield return new WaitForSeconds(0.1f);
+            FindMatches();
+            bool wasCorrectMove = chainList.Count > 0;
+            if (wasCorrectMove == false)
+                SwapPieces(pieceCoord1, pieceCoord2);
         }
 
         private void SwapPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
-            (boardController.BoardComponent.Board[pieceCoord2], boardController.BoardComponent.Board[pieceCoord1]) = (boardController.BoardComponent.Board[pieceCoord1], boardController.BoardComponent.Board[pieceCoord2]);
+            Debug.Log($"Pieces at {pieceCoord1} and {pieceCoord2} swapped");
+            boardController.BoardComponent.SwapPieces(pieceCoord1, pieceCoord2);
+            
+            //(boardController.BoardComponent.Board[pieceCoord2], boardController.BoardComponent.Board[pieceCoord1]) =
+            //    (boardController.BoardComponent.Board[pieceCoord1], boardController.BoardComponent.Board[pieceCoord2]);
         }
 
         private void PiecesMovementManager_OnAllPiecesMovementStopped()
