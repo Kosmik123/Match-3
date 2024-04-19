@@ -37,11 +37,6 @@ namespace Bipolar.Match3
                 SwapPieces(pieceCoord2, pieceCoord1);
                 OnMatchingFailed?.Invoke();
             }
-            else
-            {
-                boardComponent.GetPieceComponent(pieceCoord1).transform.position = boardComponent.CoordToWorld(pieceCoord1);
-                boardComponent.GetPieceComponent(pieceCoord2).transform.position = boardComponent.CoordToWorld(pieceCoord2);
-            }
 
             return wasCorrectMove;
 

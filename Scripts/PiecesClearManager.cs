@@ -27,6 +27,13 @@ namespace Bipolar.Match3
                 currentlyClearedPieces.Add(piece);
             }
 
+            Invoke(nameof(ClearQueuedPieces), 0);
+        }
+
+
+        [ContextMenu("Clear queued pieces")]
+        private void ClearQueuedPieces()
+        {
             foreach (var piece in currentlyClearedPieces)
             {
                 if (piece == null) 
