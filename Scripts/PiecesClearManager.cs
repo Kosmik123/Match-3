@@ -33,14 +33,7 @@ namespace Bipolar.Match3
                     Debug.LogError("null in chain");
 
                 piece.OnCleared += Piece_OnCleared;
-                if (piece.TryGetComponent<PieceClearingBehavior>(out var pieceClearing))
-                {
-                    pieceClearing.Clear();
-                }
-                else
-                {
-                    piece.IsCleared = true;
-                }
+                piece.Clear();
             }
         }
 

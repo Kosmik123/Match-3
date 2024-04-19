@@ -11,13 +11,13 @@ namespace Bipolar.Match3
 
         public void FindPossibleChains()
         {
-            var boardData = matcher.Board.GetBoardState();
+            var boardData = matcher.BoardComponent.GetBoardState();
 
             bool isHexagonal = boardData.Layout == GridLayout.CellLayout.Hexagon;
             var directions = BoardHelper.GetDirections(boardData.Layout);
             int directionsCount = directions.Count / 2; 
 
-            foreach (var coord in matcher.Board)
+            foreach (var coord in matcher.BoardComponent)
             {
                 for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
                 {

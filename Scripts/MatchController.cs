@@ -10,8 +10,10 @@ namespace Bipolar.Match3
         public event System.Action<PiecesChain> OnPiecesMatched;
         public event System.Action OnMatchingFailed;
 
+        public event PiecesSwapEventHandler OnPiecesSwapped;
+
         [SerializeField]
-        private BoardController boardController;
+        private BoardComponent boardComponent;
 
         [SerializeField]
         private Matcher matcher;
@@ -21,13 +23,30 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            boardController = FindObjectOfType<BoardController>();
+            boardComponent = FindObjectOfType<BoardComponent>();
             matcher = FindObjectOfType<Matcher>();
         }
 
-        public void StartSwappingPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        public bool TrySwapPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
-            boardController.PiecesMovementManager.OnAllPiecesMovementStopped += PiecesMovementManager_OnAllPiecesMovementStopped;
+            SwapPieces(pieceCoord1, pieceCoord2);
+            FindMatches();
+            bool wasCorrectMove = chainList.Count > 0;
+            if (wasCorrectMove == false)
+            {
+                SwapPieces(pieceCoord2, pieceCoord1);
+                OnMatchingFailed?.Invoke();
+            }
+            else
+            {
+                boardComponent.GetPieceComponent(pieceCoord1).transform.position = boardComponent.CoordToWorld(pieceCoord1);
+                boardComponent.GetPieceComponent(pieceCoord2).transform.position = boardComponent.CoordToWorld(pieceCoord2);
+            }
+
+            return wasCorrectMove;
+
+
+            //boardController.PiecesMovementManager.OnAllPiecesMovementStopped += PiecesMovementManager_OnAllPiecesMovementStopped;
             swapEndedCallback = () =>
             {
                 swapEndedCallback = null;
@@ -40,11 +59,9 @@ namespace Bipolar.Match3
                 }
             };
 
-            SwapPieces(pieceCoord1, pieceCoord2);
 
             StartCoroutine(TEST_CheckMatchesAfterSwapping(pieceCoord1, pieceCoord2));
         }
-
 
         private IEnumerator TEST_CheckMatchesAfterSwapping(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
@@ -58,15 +75,13 @@ namespace Bipolar.Match3
         private void SwapPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
             Debug.Log($"Pieces at {pieceCoord1} and {pieceCoord2} swapped");
-            boardController.BoardComponent.SwapPieces(pieceCoord1, pieceCoord2);
-            
-            //(boardController.BoardComponent.Board[pieceCoord2], boardController.BoardComponent.Board[pieceCoord1]) =
-            //    (boardController.BoardComponent.Board[pieceCoord1], boardController.BoardComponent.Board[pieceCoord2]);
+            boardComponent.SwapPieces(pieceCoord1, pieceCoord2);
+            OnPiecesSwapped?.Invoke(pieceCoord1, pieceCoord2);
         }
 
         private void PiecesMovementManager_OnAllPiecesMovementStopped()
         {
-            boardController.PiecesMovementManager.OnAllPiecesMovementStopped -= PiecesMovementManager_OnAllPiecesMovementStopped;
+            // boardController.PiecesMovementManager.OnAllPiecesMovementStopped -= PiecesMovementManager_OnAllPiecesMovementStopped;
             swapEndedCallback?.Invoke();
         }
 
@@ -84,7 +99,7 @@ namespace Bipolar.Match3
             {
                 var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
                 color.a = 0.5f;
-                chain.DrawDebug(boardController.BoardComponent, color, 2);
+                chain.DrawDebug(boardComponent, color, 2);
             }
 #endif
         }

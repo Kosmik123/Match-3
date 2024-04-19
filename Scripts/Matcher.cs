@@ -8,7 +8,7 @@ namespace Bipolar.Match3
     {
         [SerializeField]
         private BoardComponent boardComponent;
-        public BoardComponent Board => boardComponent;
+        public BoardComponent BoardComponent => boardComponent;
 
         [SerializeField]
         private MatchingStrategy matchingStrategy;

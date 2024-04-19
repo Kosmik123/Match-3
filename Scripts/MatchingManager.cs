@@ -8,7 +8,7 @@ namespace Bipolar.Match3
         [SerializeField]
         private BoardController boardController;
         [SerializeField]
-        private SwapManager swapManager;
+        private SwapRequester swapRequester;
         [SerializeField]
         private MatchController matchController;
         [SerializeField]
@@ -24,7 +24,7 @@ namespace Bipolar.Match3
         protected virtual void Reset()
         {
             boardController = FindObjectOfType<BoardController>();
-            swapManager = FindObjectOfType<SwapManager>();
+            swapRequester = FindObjectOfType<SwapRequester>();
             matchController = FindObjectOfType<MatchController>();
             piecesClearManager = FindObjectOfType<PiecesClearManager>();
         }
@@ -32,7 +32,7 @@ namespace Bipolar.Match3
         private void OnEnable()
         {
             boardController.OnPiecesColapsed += BoardController_OnPiecesColapsed;
-            swapManager.OnSwapRequested += SwapManager_OnSwapRequested;
+            swapRequester.OnSwapRequested += SwapManager_OnSwapRequested;
             piecesClearManager.OnAllPiecesCleared += PiecesClearManager_OnAllPiecesCleared;
             matchController.OnPiecesMatched += MatchController_OnPiecesMatched;
         }
@@ -58,7 +58,7 @@ namespace Bipolar.Match3
                 return;
 
             combo = 0;
-            matchController.StartSwappingPieces(pieceCoord1, pieceCoord2);
+            matchController.TrySwapPieces(pieceCoord1, pieceCoord2);
         }
 
         private void BoardController_OnPiecesColapsed()
@@ -75,7 +75,7 @@ namespace Bipolar.Match3
         private void OnDisable()
         {
             boardController.OnPiecesColapsed -= BoardController_OnPiecesColapsed;
-            swapManager.OnSwapRequested -= SwapManager_OnSwapRequested;
+            swapRequester.OnSwapRequested -= SwapManager_OnSwapRequested;
             piecesClearManager.OnAllPiecesCleared -= PiecesClearManager_OnAllPiecesCleared;
             matchController.OnPiecesMatched -= MatchController_OnPiecesMatched;
         }
