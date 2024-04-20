@@ -23,13 +23,13 @@ namespace Bipolar.Match3
         {
             foreach (var coord in chain.PiecesCoords)
             {
-                var piece = boardController.BoardComponent.GetPieceComponent(coord);
-                currentlyClearedPieces.Add(piece);
+                var piece = boardController.BoardComponent.GetPiece(coord);
+                piece.Clear();
+
+                //var pieceComponent = boardController.BoardComponent.GetPieceComponent(coord);
+                //currentlyClearedPieces.Add(pieceComponent);
             }
-
-            Invoke(nameof(ClearQueuedPieces), 0);
         }
-
 
         [ContextMenu("Clear queued pieces")]
         private void ClearQueuedPieces()

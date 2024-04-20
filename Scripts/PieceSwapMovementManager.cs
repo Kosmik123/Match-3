@@ -6,19 +6,19 @@ namespace Bipolar.Match3
     public class PieceSwapMovementManager : MonoBehaviour
     {
         [SerializeField]
-        private MatchController matchController;
+        private MatchingManager matchingManager;
         [SerializeField]
         private BoardComponent boardComponent;
 
         protected virtual void Reset()
         {
             boardComponent = FindObjectOfType<BoardComponent>();
-            matchController = FindObjectOfType<MatchController>();
+            matchingManager = FindObjectOfType<MatchingManager>();
         }
 
         private void OnEnable()
         {
-            matchController.OnPiecesSwapped += MatchController_OnPiecesSwapped;
+            matchingManager.OnPiecesSwapped += MatchController_OnPiecesSwapped;
         }
 
         private void MatchController_OnPiecesSwapped(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
@@ -35,7 +35,7 @@ namespace Bipolar.Match3
 
         private void OnDisable()
         {
-            matchController.OnPiecesSwapped -= MatchController_OnPiecesSwapped;
+            matchingManager.OnPiecesSwapped -= MatchController_OnPiecesSwapped;
         }
     }
 }

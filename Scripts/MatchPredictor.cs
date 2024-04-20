@@ -17,7 +17,7 @@ namespace Bipolar.Match3
             var directions = BoardHelper.GetDirections(boardData.Layout);
             int directionsCount = directions.Count / 2; 
 
-            foreach (var coord in matcher.BoardComponent)
+            foreach (var coord in matcher.BoardComponent.Board)
             {
                 for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
                 {

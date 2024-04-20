@@ -55,7 +55,7 @@ namespace Bipolar.Match3
         public void FindAndCreatePieceChains(List<PiecesChain> pieceChains)
         {
             pieceChains.Clear();
-            foreach (var coord in boardComponent)
+            foreach (var coord in boardComponent.Board)
             {
                 TryAddChainWithCoord(pieceChains, coord, coordsToCheck);
             }
