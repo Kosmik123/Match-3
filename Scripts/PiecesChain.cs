@@ -26,7 +26,7 @@ namespace Bipolar.Match3
             piecesCoords.Clear();
         }
 
-        public override string ToString() => $"Pieces Chain ({(PieceType as Object).name}):{Size}";
+        public override string ToString() => $"Chain {(PieceType as Object).name}: {Size} Pieces";
 
         internal virtual void DrawGizmo(IReadOnlyBoardComponent board)
         {

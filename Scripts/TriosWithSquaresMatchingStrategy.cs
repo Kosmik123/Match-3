@@ -15,7 +15,7 @@ namespace Bipolar.Match3
             squares.Add(squareBottomLeft);
         }
 
-        public override string ToString() => $"{base.ToString()}, Sq:{SquaresCount}";
+        public override string ToString() => $"{base.ToString()}, {SquaresCount} Sq";
 
         public override void Clear()
         {

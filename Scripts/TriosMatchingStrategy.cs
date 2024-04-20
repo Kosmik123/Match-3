@@ -29,7 +29,7 @@ namespace Bipolar.Match3
             horizontalTrios.Clear();
         }
 
-        public override string ToString() => $"{base.ToString()}, H:{HorizontalTriosCount}, V:{VerticalTriosCount}";
+        public override string ToString() => $"{base.ToString()}, {HorizontalTriosCount} H, {VerticalTriosCount} V";
 
         internal override void DrawDebug(IReadOnlyBoardComponent board, Color color, float duration)
         {
