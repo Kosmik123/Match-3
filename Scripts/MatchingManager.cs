@@ -1,6 +1,5 @@
 ﻿using Bipolar.PuzzleBoard;
 using Bipolar.PuzzleBoard.Components;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,8 +7,6 @@ namespace Bipolar.Match3
 {
     public class MatchingManager : MonoBehaviour
     {
-        public event PiecesSwapEventHandler OnPiecesSwapped;
-
         [SerializeField]
         private BoardController boardController;
         [SerializeField]
@@ -18,6 +15,12 @@ namespace Bipolar.Match3
         private MatchController matchController;
         [SerializeField]
         private PiecesClearManager piecesClearManager;
+        [SerializeField]
+        private BoardCollapseController boardCollapseController;
+        [SerializeField]
+        private BoardComponent boardComponent;
+        [SerializeField]
+        private PiecesSwapManager piecesSwapManager;
 
         [SerializeField]
         private int combo;
@@ -43,7 +46,7 @@ namespace Bipolar.Match3
         {
             do
             {
-                boardController.Collapse();
+                boardCollapseController.Collapse();
                 bool matchesAtStart = matchController.FindMatches();
                 if (matchesAtStart == false)
                     return;
@@ -80,7 +83,7 @@ namespace Bipolar.Match3
                 success = true;
                 ClearChains(matchController.Chains);
 
-                boardController.Collapse();
+                boardCollapseController.Collapse();
             }
             while (true);
             return success;
@@ -93,7 +96,7 @@ namespace Bipolar.Match3
             {
                 foreach (var coord in chain.PiecesCoords)
                 {
-                    piecesToClear.Add(boardController.BoardComponent.GetPiece(coord));
+                    piecesToClear.Add(boardComponent.GetPiece(coord));
                 }
             }
 
@@ -111,7 +114,7 @@ namespace Bipolar.Match3
 
         private void PiecesClearManager_OnAllPiecesCleared()
         {
-            boardController.Collapse();
+            boardCollapseController.Collapse();
             testMatchPredictor?.FindPossibleChains();
         }
 
@@ -119,15 +122,13 @@ namespace Bipolar.Match3
         {
             Debug.Log($"Pieces at {pieceCoord1} and {pieceCoord2} swapped");
 
-            var piece1 = boardController.BoardComponent.GetPiece(pieceCoord1);
-            var piece2 = boardController.BoardComponent.GetPiece(pieceCoord2);
+            var piece1 = boardComponent.GetPiece(pieceCoord1);
+            var piece2 = boardComponent.GetPiece(pieceCoord2);
             
-            boardController.BoardComponent.SwapPieces(pieceCoord1, pieceCoord2);
+            boardComponent.SwapPieces(pieceCoord1, pieceCoord2);
 
-            var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, pieceCoord2, pieceCoord1, boardController.BoardComponent);
+            var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, pieceCoord2, pieceCoord1, piecesSwapManager);
             boardController.RequestCommand(swapPiecesCommand);
-
-            OnPiecesSwapped?.Invoke(pieceCoord1, pieceCoord2);
         }
         
         private void OnDisable()
