@@ -1,4 +1,6 @@
-﻿using Bipolar.PuzzleBoard.Components;
+﻿using Bipolar.PuzzleBoard;
+using Bipolar.PuzzleBoard.Components;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Bipolar.Match3
@@ -39,12 +41,6 @@ namespace Bipolar.Match3
             //matchController.OnPiecesMatched += MatchController_OnPiecesMatched;
         }
 
-        private void MatchController_OnPiecesMatched(PiecesChain chain)
-        {
-            combo++;
-            ClearPiecesInChain(chain);
-        }
-
         private void Start()
         {
             do
@@ -54,8 +50,7 @@ namespace Bipolar.Match3
                 if (matchesAtStart == false)
                     return;
 
-                foreach (var chain in matchController.Chains)
-                    ClearPiecesInChain(chain);
+                ClearChains(matchController.Chains);
             }
             while (true);
         }
@@ -88,8 +83,7 @@ namespace Bipolar.Match3
                     break;
 
                 success = true;
-                foreach (var chain in matchController.Chains)
-                    ClearPiecesInChain(chain);
+                ClearChains(matchController.Chains);
 
                 boardController.Collapse();
             }
@@ -97,11 +91,18 @@ namespace Bipolar.Match3
             return success;
         }
 
-        private void ClearPiecesInChain(PiecesChain chain) => piecesClearManager.ClearPiecesInChain(chain);
-
-        private void BoardController_OnPiecesColapsed()
+        private void ClearChains(IReadOnlyList<PiecesChain> chains)
         {
-            matchController.FindMatches();
+            var piecesToClear = new List<Piece>(); 
+            foreach (var chain in chains)
+            {
+                foreach (var coord in chain.PiecesCoords)
+                {
+                    piecesToClear.Add(boardController.BoardComponent.GetPiece(coord));
+                }
+            }
+
+            piecesClearManager.ClearPieces(piecesToClear);
         }
 
         private void PiecesClearManager_OnAllPiecesCleared()
@@ -122,7 +123,6 @@ namespace Bipolar.Match3
             // boardController.OnPiecesColapsed -= BoardController_OnPiecesColapsed;
             swapRequester.OnSwapRequested -= SwapManager_OnSwapRequested;
             //piecesClearManager.OnAllPiecesCleared -= PiecesClearManager_OnAllPiecesCleared;
-            matchController.OnPiecesMatched -= MatchController_OnPiecesMatched;
         }
     }
 }
