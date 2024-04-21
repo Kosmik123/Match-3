@@ -1,5 +1,6 @@
 ﻿using Bipolar.PuzzleBoard;
 using Bipolar.PuzzleBoard.Components;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -96,7 +97,16 @@ namespace Bipolar.Match3
                 }
             }
 
-            piecesClearManager.ClearPieces(piecesToClear);
+            ClearPieces(piecesToClear);
+        }
+
+        private void ClearPieces(List<Piece> pieces)
+        {
+            foreach (var piece in pieces)
+                piece.Clear();
+
+            var command = new ClearPiecesCommand(pieces, piecesClearManager);
+            boardController.RequestCommand(command);
         }
 
         private void PiecesClearManager_OnAllPiecesCleared()
