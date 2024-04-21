@@ -1,4 +1,5 @@
-﻿using Bipolar.PuzzleBoard.Components;
+﻿using Bipolar.PuzzleBoard;
+using Bipolar.PuzzleBoard.Components;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,14 +22,19 @@ namespace Bipolar.Match3
 
         public void ClearPiecesInChain(PiecesChain chain)
         {
+            var clearedPieces = new List<Piece>();
             foreach (var coord in chain.PiecesCoords)
             {
                 var piece = boardController.BoardComponent.GetPiece(coord);
                 piece.Clear();
+                clearedPieces.Add(piece);
 
                 //var pieceComponent = boardController.BoardComponent.GetPieceComponent(coord);
                 //currentlyClearedPieces.Add(pieceComponent);
             }
+
+            var command = new ClearPiecesCommand(clearedPieces, boardController.BoardComponent);
+            boardController.RequestCommand(command);
         }
 
         [ContextMenu("Clear queued pieces")]

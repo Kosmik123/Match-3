@@ -13,7 +13,9 @@ namespace Bipolar.Match3
         private SwapRequester swapRequester;
         [SerializeField]
         private MatchController matchController;
-        
+        [SerializeField]
+        private PiecesClearManager piecesClearManager;
+
         [SerializeField]
         private int combo;
         public int Combo => combo;
@@ -26,12 +28,12 @@ namespace Bipolar.Match3
             boardController = FindObjectOfType<BoardController>();
             swapRequester = FindObjectOfType<SwapRequester>();
             matchController = FindObjectOfType<MatchController>();
-            //piecesClearManager = FindObjectOfType<PiecesClearManager>();
+            piecesClearManager = FindObjectOfType<PiecesClearManager>();
         }
 
         private void OnEnable()
         {
-            boardController.OnPiecesColapsed += BoardController_OnPiecesColapsed;
+            // boardController.OnPiecesColapsed += BoardController_OnPiecesColapsed;
             swapRequester.OnSwapRequested += SwapManager_OnSwapRequested;
             //piecesClearManager.OnAllPiecesCleared += PiecesClearManager_OnAllPiecesCleared;
             //matchController.OnPiecesMatched += MatchController_OnPiecesMatched;
@@ -45,26 +47,39 @@ namespace Bipolar.Match3
 
         private void Start()
         {
-            boardController.Collapse();
+            do
+            {
+                boardController.Collapse();
+                bool matchesAtStart = matchController.FindMatches();
+                if (matchesAtStart == false)
+                    return;
+
+                foreach (var chain in matchController.Chains)
+                    ClearPiecesInChain(chain);
+            }
+            while (true);
         }
 
         private void SwapManager_OnSwapRequested(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
             Debug.Log($"Swap of {pieceCoord1} and {pieceCoord2} requested");
-            if (boardController.ArePiecesMoving || boardController.IsCollapsing)
+            if (boardController.IsBusy)
                 return;
 
             //if (piecesClearManager.CurrentlyClearedPiecesCount > 0)
             //    return;
 
-            TrySwapAndMatch(pieceCoord1, pieceCoord2);
+            if (TrySwapAndMatch(pieceCoord1, pieceCoord2) == false)
+            {
+                SwapPieces(pieceCoord2, pieceCoord1);
+            }
         }
 
         private bool TrySwapAndMatch(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
         {
             combo = 0;
             SwapPieces(pieceCoord1, pieceCoord2);
-            bool shouldSwapBack = true;
+            bool success = false;
             do 
             {
                 combo++;
@@ -72,28 +87,17 @@ namespace Bipolar.Match3
                 if (matched == false)
                     break;
 
-                shouldSwapBack = false;
+                success = true;
                 foreach (var chain in matchController.Chains)
                     ClearPiecesInChain(chain);
 
                 boardController.Collapse();
             }
             while (true);
-
-            if (shouldSwapBack)
-                SwapPieces(pieceCoord2, pieceCoord1);
-            
-            return shouldSwapBack;
+            return success;
         }
 
-        private void ClearPiecesInChain(PiecesChain chain)
-        {
-            foreach (var coord in chain.PiecesCoords)
-            {
-                var piece = boardController.BoardComponent.GetPiece(coord);
-                piece.Clear();
-            }
-        }
+        private void ClearPiecesInChain(PiecesChain chain) => piecesClearManager.ClearPiecesInChain(chain);
 
         private void BoardController_OnPiecesColapsed()
         {
@@ -115,7 +119,7 @@ namespace Bipolar.Match3
         
         private void OnDisable()
         {
-            boardController.OnPiecesColapsed -= BoardController_OnPiecesColapsed;
+            // boardController.OnPiecesColapsed -= BoardController_OnPiecesColapsed;
             swapRequester.OnSwapRequested -= SwapManager_OnSwapRequested;
             //piecesClearManager.OnAllPiecesCleared -= PiecesClearManager_OnAllPiecesCleared;
             matchController.OnPiecesMatched -= MatchController_OnPiecesMatched;

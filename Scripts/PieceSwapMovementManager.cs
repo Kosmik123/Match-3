@@ -8,11 +8,11 @@ namespace Bipolar.Match3
         [SerializeField]
         private MatchingManager matchingManager;
         [SerializeField]
-        private BoardComponent boardComponent;
+        private BoardController boardController;
 
         protected virtual void Reset()
         {
-            boardComponent = FindObjectOfType<BoardComponent>();
+            boardController = FindObjectOfType<BoardController>();
             matchingManager = FindObjectOfType<MatchingManager>();
         }
 
@@ -29,8 +29,8 @@ namespace Bipolar.Match3
 
         private void MovePiece(Vector2Int coord)
         {
-            var piece = boardComponent.GetPieceComponent(coord);
-            piece.MoveTo(boardComponent.CoordToWorld(coord));
+            var piece = boardController.BoardComponent.GetPieceComponent(coord);
+            piece.MoveTo(boardController.BoardComponent.CoordToWorld(coord));
         }
 
         private void OnDisable()
