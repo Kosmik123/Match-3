@@ -18,7 +18,7 @@ namespace Bipolar.Match3
 
         private void OnEnable()
         {
-            matchingManager.OnPiecesSwapped += MatchController_OnPiecesSwapped;
+           // matchingManager.OnPiecesSwapped += MatchController_OnPiecesSwapped;
         }
 
         private void MatchController_OnPiecesSwapped(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
