@@ -19,9 +19,9 @@ namespace Bipolar.Match3
             matcher = FindObjectOfType<Matcher>();
         }
 
-        public bool FindMatches()
+        public bool FindMatches(params Vector2Int[] startingCoords)
         {
-            matcher.FindAndCreatePieceChains(chainList);
+            matcher.FindAndCreatePieceChains(chainList, startingCoords);
             foreach (var chain in chainList)
             {
                 OnPiecesMatched?.Invoke(chain); 

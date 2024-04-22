@@ -78,7 +78,7 @@ namespace Bipolar.Match3
                 return false;
 
             var nearPiece = boardData[nearCoord];
-            if (nearPiece == null || chain.PieceType != nearPiece.Color)
+            if (nearPiece == null || chain.PieceColor != nearPiece.Color)
                 return false;
 
             var backCoord = pieceCoord + BoardHelper.GetCorrectedDirection(pieceCoord, -direction, isHexagonal);
@@ -86,7 +86,7 @@ namespace Bipolar.Match3
                 return false;
             
             var backPiece = boardData[backCoord];
-            if (backPiece != null && (chain.PieceType == backPiece.Color))
+            if (backPiece != null && (chain.PieceColor == backPiece.Color))
             {
                 chain.IsMatchFound = true;
                 TryEnqueueCoord(chain, coordsToCheck, nearCoord);
@@ -100,7 +100,7 @@ namespace Bipolar.Match3
                 return false;
             
             var furtherPiece = boardData[furtherCoord];
-            if (furtherPiece != null && (chain.PieceType == furtherPiece.Color))
+            if (furtherPiece != null && (chain.PieceColor == furtherPiece.Color))
             {
                 chain.IsMatchFound = true;
                 TryEnqueueCoord(chain, coordsToCheck, nearCoord);

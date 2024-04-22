@@ -11,11 +11,11 @@ namespace Bipolar.Match3
 
     public abstract class MatchingStrategy : ScriptableObject, IMatchingStrategy
     {
-        protected abstract PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
+        protected abstract PiecesChain CreatePiecesChain(Piece startingPiece, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
 
         public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IReadOnlyBoard board)
         {
-            return CreatePiecesChain(board[coordsQueue.Peek()].Color, coordsQueue, board);
+            return CreatePiecesChain(board[coordsQueue.Peek()], coordsQueue, board);
         }
 
         public static bool TryEnqueueCoord(PiecesChain chain, Queue<Vector2Int> coordsQueue, Vector2Int coord)
@@ -34,17 +34,18 @@ namespace Bipolar.Match3
     public abstract class MatchingStrategy<T> : MatchingStrategy
         where T : PiecesChain, new()
     {
-        protected sealed override PiecesChain CreatePiecesChain(IPieceColor pieceType, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board)
+        protected sealed override PiecesChain CreatePiecesChain(Piece startingPiece, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board)
         {
-            var chain = CreatePiecesChain(pieceType); 
+            var chain = CreatePiecesChain(startingPiece); 
             PopulatePiecesChain(chain, coordsToCheck, board);
             return chain;
         }
 
-        private static T CreatePiecesChain(IPieceColor pieceType)
+        private static T CreatePiecesChain(Piece piece)
         {
             var chain = new T();
-            chain.PieceType = pieceType;
+            chain.PieceColor = piece.Color;
+            chain.StartingCoord = piece.Coord;
             return chain;
         }
 

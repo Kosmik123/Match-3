@@ -1,5 +1,6 @@
 ﻿using Bipolar.PuzzleBoard;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Bipolar.Match3
@@ -28,15 +29,15 @@ namespace Bipolar.Match3
             matchingStrategy = ScriptableObject.CreateInstance<T>();
         }
 
-        public bool TryAddChainWithCoord(List<PiecesChain> piecesChains, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
+        public bool TryAddChainWithCoord(IList<PiecesChain> pieceChainsBuffer, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
         {
-            if (piecesChains.Find(chain => chain.Contains(coord)) != null)
+            if (pieceChainsBuffer.FirstOrDefault(chain => chain.Contains(coord)) != null)
                 return false;
 
             if (TryCreatePiecesChain(coord, out var chain, coordsQueue) == false)
                 return false;
 
-            piecesChains.Add(chain);
+            pieceChainsBuffer.Add(chain);
             return true;
         }
 
@@ -52,13 +53,26 @@ namespace Bipolar.Match3
 
         private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
 
-        public void FindAndCreatePieceChains(List<PiecesChain> pieceChains)
+        public void FindAndCreatePieceChains(IList<PiecesChain> pieceChainsBuffer, params Vector2Int[] startingCoords)
         {
-            pieceChains.Clear();
+            pieceChainsBuffer.Clear();
+            foreach (var coord in startingCoords)
+                TryAddChainWithCoord(pieceChainsBuffer, coord, coordsToCheck);
+
+            AddChainsFromBoard(pieceChainsBuffer);
+        }
+
+        public void FindAndCreatePieceChains(IList<PiecesChain> pieceChainsBuffer, Vector2Int startingCoord)
+        {
+            pieceChainsBuffer.Clear();
+            TryAddChainWithCoord(pieceChainsBuffer, startingCoord, coordsToCheck);
+            AddChainsFromBoard(pieceChainsBuffer);
+        }
+
+        private void AddChainsFromBoard(IList<PiecesChain> pieceChainsBuffer)
+        {
             foreach (var coord in boardComponent.Board)
-            {
-                TryAddChainWithCoord(pieceChains, coord, coordsToCheck);
-            }
+                TryAddChainWithCoord(pieceChainsBuffer, coord, coordsToCheck);
         }
     }
 }

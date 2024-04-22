@@ -1,4 +1,5 @@
 ﻿using Bipolar.PuzzleBoard;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,18 +42,10 @@ namespace Bipolar.Match3
             swapRequester.OnSwapRequested += SwapManager_OnSwapRequested;
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
-            do
-            {
-                boardCollapseController.Collapse();
-                bool matchesAtStart = matchController.FindMatches();
-                if (matchesAtStart == false)
-                    return;
-
-                ClearChains(matchController.Chains);
-            }
-            while (true);
+            boardCollapseController.Collapse();
+            yield return TryMatch();
         }
 
         private void SwapManager_OnSwapRequested(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
@@ -61,31 +54,32 @@ namespace Bipolar.Match3
             if (boardController.IsBusy)
                 return;
 
-            if (TrySwapAndMatch(pieceCoord1, pieceCoord2) == false)
-            {
-                SwapPieces(pieceCoord2, pieceCoord1);
-            }
+            SwapPieces(pieceCoord1, pieceCoord2);
+            StartCoroutine(TryMatch(
+                onSuccess: null, 
+                onFail: () => SwapPieces(pieceCoord2, pieceCoord1),
+                pieceCoord1, pieceCoord2));
         }
 
-        private bool TrySwapAndMatch(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        private IEnumerator TryMatch(System.Action onSuccess = null, System.Action onFail = null, params Vector2Int[] coords)
         {
             combo = 0;
-            SwapPieces(pieceCoord1, pieceCoord2);
             bool success = false;
             do 
             {
                 combo++;
-                bool matched = matchController.FindMatches();
+                bool matched = matchController.FindMatches(coords);
                 if (matched == false)
                     break;
 
                 success = true;
                 ClearChains(matchController.Chains);
-
                 boardCollapseController.Collapse();
+                yield return null;
             }
             while (true);
-            return success;
+            var action = success ? onSuccess : onFail;
+            action?.Invoke();
         }
 
         private void ClearChains(IReadOnlyList<PiecesChain> chains)
@@ -109,12 +103,6 @@ namespace Bipolar.Match3
 
             var command = new ClearPiecesCommand(pieces, piecesClearManager);
             boardController.RequestCommand(command);
-        }
-
-        private void PiecesClearManager_OnAllPiecesCleared()
-        {
-            boardCollapseController.Collapse();
-            testMatchPredictor?.FindPossibleChains();
         }
 
         private void SwapPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)

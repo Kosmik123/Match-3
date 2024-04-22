@@ -6,12 +6,15 @@ namespace Bipolar.Match3
 {
     public class PiecesChain
     {
-        public IPieceColor PieceType { get; set; }
-
+        public Vector2Int StartingCoord { get; set; }
+        public IPieceColor PieceColor { get; set; }
+        
         protected readonly HashSet<Vector2Int> piecesCoords = new HashSet<Vector2Int>();
         public IReadOnlyCollection<Vector2Int> PiecesCoords => piecesCoords;
+        
         public bool IsMatchFound { get; set; } = false;
         public bool Contains(Vector2Int pieceCoord) => piecesCoords.Contains(pieceCoord);
+        
         public int Size => piecesCoords.Count;
 
         public void Add(Vector2Int pieceCoord)
@@ -21,11 +24,11 @@ namespace Bipolar.Match3
 
         public virtual void Clear()
         {
-            PieceType = null;
+            PieceColor = null;
             piecesCoords.Clear();
         }
 
-        public override string ToString() => $"Chain {(PieceType as Object).name}: {Size} Pieces";
+        public override string ToString() => $"Chain {(PieceColor as Object).name}: {Size} Pieces";
 
         internal virtual void DrawGizmo(IReadOnlyBoardComponent board)
         {
