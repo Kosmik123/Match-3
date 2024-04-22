@@ -1,4 +1,4 @@
-﻿using Bipolar.PuzzleBoard.Components;
+﻿using Bipolar.PuzzleBoard;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
