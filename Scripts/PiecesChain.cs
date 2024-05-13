@@ -30,13 +30,13 @@ namespace Bipolar.Match3
 
         public override string ToString() => $"Chain {(PieceColor as Object).name}: {Size} Pieces";
 
-        internal virtual void DrawGizmo(IReadOnlyBoardComponent board)
+        internal virtual void DrawGizmo(IReadOnlySceneBoard board)
         {
             foreach (var coord in PiecesCoords)
                 Gizmos.DrawSphere(board.CoordToWorld(coord), 0.3f);
         }
 
-        internal virtual void DrawDebug(IReadOnlyBoardComponent board, Color color, float duration)
+        internal virtual void DrawDebug(IReadOnlySceneBoard board, Color color, float duration)
         { }
     }
 }

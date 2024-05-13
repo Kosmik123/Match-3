@@ -6,11 +6,11 @@ namespace Bipolar.Match3
 {
     public class SwipeDetector : MonoBehaviour, IDragHandler, IEndDragHandler
     { 
-        public delegate void TokenSwipeEventHandler(Vector2Int pieceCoord, Vector2Int direction);
-        public event TokenSwipeEventHandler OnPieceSwiped;
+        public delegate void PieceSwipeEventHandler(Vector2Int pieceCoord, Vector2Int direction);
+        public event PieceSwipeEventHandler OnPieceSwiped;
 
         [SerializeField]
-        private BoardComponent board;
+        private SceneBoard board;
 
         [SerializeField]
         private float releaseDetectionDistance = 0.5f;
@@ -40,7 +40,7 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            board = FindObjectOfType<BoardComponent>();   
+            board = FindObjectOfType<SceneBoard>();   
         }
 
         private void Awake()

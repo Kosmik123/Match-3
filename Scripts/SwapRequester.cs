@@ -11,7 +11,7 @@ namespace Bipolar.Match3
         public event System.Action<Vector2Int> OnPieceSelected;
 
         [SerializeField]
-        private BoardComponent board;
+        private SceneBoard board;
         [SerializeField]
         private PiecesClickDetector piecesClickDetector;
         [SerializeField]
@@ -22,7 +22,7 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            board = FindObjectOfType<BoardComponent>();
+            board = FindObjectOfType<SceneBoard>();
             piecesClickDetector = FindObjectOfType<PiecesClickDetector>();
             swipeDetector = FindObjectOfType<SwipeDetector>();
         }

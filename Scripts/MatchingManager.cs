@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
+
     public class MatchingManager : MonoBehaviour
     {
         [SerializeField]
@@ -18,7 +19,7 @@ namespace Bipolar.Match3
         [SerializeField]
         private BoardCollapseController boardCollapseController;
         [SerializeField]
-        private BoardComponent boardComponent;
+        private SceneBoard sceneBoard;
         [SerializeField]
         private PiecesSwapManager piecesSwapManager;
 
@@ -65,7 +66,7 @@ namespace Bipolar.Match3
         {
             combo = 0;
             bool success = false;
-            do 
+            do
             {
                 combo++;
                 bool matched = matchController.FindMatches(coords);
@@ -82,24 +83,26 @@ namespace Bipolar.Match3
             action?.Invoke();
         }
 
+
+        // to powinno znaleźć się w osobnej klasie która zarządza tworzeniem bomb w rzędach od długości 4+
         private void ClearChains(IReadOnlyList<PiecesChain> chains)
         {
-            var piecesToClear = new List<Piece>(); 
+            var piecesToClear = new List<Piece>();
             foreach (var chain in chains)
             {
                 foreach (var coord in chain.PiecesCoords)
                 {
-                    piecesToClear.Add(boardComponent.GetPiece(coord));
+                    piecesToClear.Add(sceneBoard.GetPiece(coord));
                 }
             }
 
             ClearPieces(piecesToClear);
         }
 
-        private void ClearPieces(List<Piece> pieces)
+        private void ClearPieces(IReadOnlyList<Piece> pieces)
         {
             foreach (var piece in pieces)
-                piece.Clear();
+                piece.ClearPiece();
 
             var command = new ClearPiecesCommand(pieces, piecesClearManager);
             boardController.RequestCommand(command);
@@ -109,10 +112,9 @@ namespace Bipolar.Match3
         {
             Debug.Log($"Pieces at {pieceCoord1} and {pieceCoord2} swapped");
 
-            var piece1 = boardComponent.GetPiece(pieceCoord1);
-            var piece2 = boardComponent.GetPiece(pieceCoord2);
-            
             boardComponent.SwapPieces(pieceCoord1, pieceCoord2);
+            var piece1 = sceneBoard.GetPiece(coords.firstCoord);
+            var piece2 = sceneBoard.GetPiece(coords.secondCoord);
 
             var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, pieceCoord2, pieceCoord1, piecesSwapManager);
             boardController.RequestCommand(swapPiecesCommand);

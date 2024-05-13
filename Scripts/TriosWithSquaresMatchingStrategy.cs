@@ -22,7 +22,7 @@ namespace Bipolar.Match3
             squares.Clear();
         }
 
-        internal override void DrawDebug(IReadOnlyBoardComponent board, Color color, float duration)
+        internal override void DrawDebug(IReadOnlySceneBoard board, Color color, float duration)
         {
             base.DrawDebug(board, color, duration);
             foreach (var bottomLeft in squares)

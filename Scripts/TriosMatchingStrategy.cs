@@ -30,7 +30,7 @@ namespace Bipolar.Match3
 
         public override string ToString() => $"{base.ToString()}, {HorizontalTriosCount} H, {VerticalTriosCount} V";
 
-        internal override void DrawDebug(IReadOnlyBoardComponent board, Color color, float duration)
+        internal override void DrawDebug(IReadOnlySceneBoard board, Color color, float duration)
         {
             base.DrawDebug(board, color, duration);
             foreach (var coord in horizontalTrios)
@@ -48,7 +48,7 @@ namespace Bipolar.Match3
             }
         }
 
-        protected void DrawDebugLine(Vector2Int startCoord, Vector2Int endCoord, Color color, float duration, IReadOnlyBoardComponent board)
+        protected void DrawDebugLine(Vector2Int startCoord, Vector2Int endCoord, Color color, float duration, IReadOnlySceneBoard board)
         {
             Debug.DrawLine(board.CoordToWorld(startCoord), board.CoordToWorld(endCoord), color, duration);
         }

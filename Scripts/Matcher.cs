@@ -8,15 +8,15 @@ namespace Bipolar.Match3
     public class Matcher : MonoBehaviour
     {
         [SerializeField]
-        private BoardComponent boardComponent;
-        public BoardComponent BoardComponent => boardComponent;
+        private SceneBoard sceneBoard;
+        public SceneBoard SceneBoard => sceneBoard;
 
         [SerializeField]
         private MatchingStrategy matchingStrategy;
-        public IMatchingStrategy MatchingStrategy
+        protected IMatchingStrategy MatchingStrategy
         {
             get => matchingStrategy;
-            private set => matchingStrategy = (MatchingStrategy)value;
+            set => matchingStrategy = (MatchingStrategy)value;
         }
 
         protected virtual void Reset()
