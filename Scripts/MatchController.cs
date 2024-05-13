@@ -9,36 +9,39 @@ namespace Bipolar.Match3
         public event System.Action OnMatchingFailed;
 
         [SerializeField]
-        private Matcher matcher;
+        private Matcher _matcher;
+        protected IMatcher Matcher => _matcher;
 
         private readonly List<PiecesChain> chainList = new List<PiecesChain>();
         public IReadOnlyList<PiecesChain> Chains => chainList;
 
         protected virtual void Reset()
         {
-            matcher = FindObjectOfType<Matcher>();
+            _matcher = FindObjectOfType<Matcher>();
         }
 
-        public bool FindMatches(params Vector2Int[] startingCoords)
+        public bool FindMatches(System.ReadOnlySpan<Vector2Int> startingCoords)
         {
-            matcher.FindAndCreatePieceChains(chainList, startingCoords);
+            Matcher.FindAndCreatePieceChains(chainList, startingCoords);
             foreach (var chain in chainList)
             {
                 OnPiecesMatched?.Invoke(chain); 
             }
+
             if (chainList.Count <= 0)
                 OnMatchingFailed?.Invoke();
-            
+
 #if UNITY_EDITOR
-            var colorRandomizer = new System.Random(chainList.Count);
+            var previousRandomState = Random.state;
+            Random.InitState(chainList.Count);
             foreach (var chain in chainList)
             {
-                var color = Color.HSVToRGB((float)colorRandomizer.NextDouble(), 1, 1);
+                var color = Color.HSVToRGB(Random.value, 1, 1);
                 color.a = 0.5f;
-                chain.DrawDebug(matcher.BoardComponent, color, 2);
+                chain.DrawDebug(_matcher.SceneBoard, color, 2);
             }
+            Random.state = previousRandomState;
 #endif
-
             return chainList.Count > 0;
         }
     }

@@ -5,7 +5,13 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public class Matcher : MonoBehaviour
+    public interface IMatcher
+    {
+        void FindAndCreatePieceChains(IList<PiecesChain> pieceChainsBuffer, System.ReadOnlySpan<Vector2Int> startingCoords);
+        void SetMatchingStrategy<T>() where T : MatchingStrategy;
+    }
+
+    public class Matcher : MonoBehaviour, IMatcher
     {
         [SerializeField]
         private SceneBoard sceneBoard;
@@ -21,7 +27,7 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            boardComponent = FindObjectOfType<BoardComponent>();
+            sceneBoard = FindObjectOfType<SceneBoard>();
         }
 
         public void SetMatchingStrategy<T>() where T : MatchingStrategy
@@ -29,7 +35,23 @@ namespace Bipolar.Match3
             matchingStrategy = ScriptableObject.CreateInstance<T>();
         }
 
-        public bool TryAddChainWithCoord(IList<PiecesChain> pieceChainsBuffer, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
+        private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
+
+        public void FindAndCreatePieceChains(IList<PiecesChain> pieceChainsBuffer, System.ReadOnlySpan<Vector2Int> startingCoords)
+        {
+            pieceChainsBuffer.Clear();
+            foreach (var coord in startingCoords)
+                TryAddChainWithCoord(pieceChainsBuffer, coord, coordsToCheck);
+            AddChainsFromBoard(pieceChainsBuffer);
+        }
+
+        private void AddChainsFromBoard(IList<PiecesChain> pieceChainsBuffer)
+        {
+            foreach (var coord in sceneBoard.Board)
+                TryAddChainWithCoord(pieceChainsBuffer, coord, coordsToCheck);
+        }
+
+        private bool TryAddChainWithCoord(IList<PiecesChain> pieceChainsBuffer, Vector2Int coord, Queue<Vector2Int> coordsQueue = null)
         {
             if (pieceChainsBuffer.FirstOrDefault(chain => chain.Contains(coord)) != null)
                 return false;
@@ -41,38 +63,12 @@ namespace Bipolar.Match3
             return true;
         }
 
-        protected bool TryCreatePiecesChain(Vector2Int startingCoord, out PiecesChain resultChain, Queue<Vector2Int> coordsToCheck = null)
+        private bool TryCreatePiecesChain(Vector2Int startingCoord, out PiecesChain resultChain, Queue<Vector2Int> coordsToCheck = null)
         {
             coordsToCheck ??= new Queue<Vector2Int>();
             coordsToCheck.Clear();
-            coordsToCheck.Enqueue(startingCoord);
-
-            resultChain = MatchingStrategy.GetPiecesChain(coordsToCheck, boardComponent.Board);
+            resultChain = MatchingStrategy.GetPiecesChain(startingCoord, sceneBoard.Board, coordsToCheck);
             return resultChain.IsMatchFound;
-        }
-
-        private readonly Queue<Vector2Int> coordsToCheck = new Queue<Vector2Int>();
-
-        public void FindAndCreatePieceChains(IList<PiecesChain> pieceChainsBuffer, params Vector2Int[] startingCoords)
-        {
-            pieceChainsBuffer.Clear();
-            foreach (var coord in startingCoords)
-                TryAddChainWithCoord(pieceChainsBuffer, coord, coordsToCheck);
-
-            AddChainsFromBoard(pieceChainsBuffer);
-        }
-
-        public void FindAndCreatePieceChains(IList<PiecesChain> pieceChainsBuffer, Vector2Int startingCoord)
-        {
-            pieceChainsBuffer.Clear();
-            TryAddChainWithCoord(pieceChainsBuffer, startingCoord, coordsToCheck);
-            AddChainsFromBoard(pieceChainsBuffer);
-        }
-
-        private void AddChainsFromBoard(IList<PiecesChain> pieceChainsBuffer)
-        {
-            foreach (var coord in boardComponent.Board)
-                TryAddChainWithCoord(pieceChainsBuffer, coord, coordsToCheck);
         }
     }
 }

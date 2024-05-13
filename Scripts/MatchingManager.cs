@@ -49,17 +49,17 @@ namespace Bipolar.Match3
             yield return TryMatch();
         }
 
-        private void SwapManager_OnSwapRequested(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        private void SwapManager_OnSwapRequested(CoordsPair coords)
         {
-            Debug.Log($"Swap of {pieceCoord1} and {pieceCoord2} requested");
+            Debug.Log($"Swap of {coords.firstCoord} and {coords.secondCoord} requested");
             if (boardController.IsBusy)
                 return;
 
-            SwapPieces(pieceCoord1, pieceCoord2);
+            SwapPieces(coords);
             StartCoroutine(TryMatch(
-                onSuccess: null, 
-                onFail: () => SwapPieces(pieceCoord2, pieceCoord1),
-                pieceCoord1, pieceCoord2));
+                onSuccess: null,
+                onFail: () => SwapPieces(coords),
+                coords.firstCoord, coords.secondCoord));
         }
 
         private IEnumerator TryMatch(System.Action onSuccess = null, System.Action onFail = null, params Vector2Int[] coords)
@@ -108,18 +108,19 @@ namespace Bipolar.Match3
             boardController.RequestCommand(command);
         }
 
-        private void SwapPieces(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        private void SwapPieces(CoordsPair coords)
         {
-            Debug.Log($"Pieces at {pieceCoord1} and {pieceCoord2} swapped");
+            Debug.Log($"Pieces at {coords.firstCoord} and {coords.secondCoord} swapped");
 
-            boardComponent.SwapPieces(pieceCoord1, pieceCoord2);
             var piece1 = sceneBoard.GetPiece(coords.firstCoord);
             var piece2 = sceneBoard.GetPiece(coords.secondCoord);
 
-            var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, pieceCoord2, pieceCoord1, piecesSwapManager);
+            sceneBoard.SwapPieces(coords.firstCoord, coords.secondCoord);
+
+            var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, coords.secondCoord, coords.firstCoord, piecesSwapManager);
             boardController.RequestCommand(swapPiecesCommand);
         }
-        
+
         private void OnDisable()
         {
             swapRequester.OnSwapRequested -= SwapManager_OnSwapRequested;

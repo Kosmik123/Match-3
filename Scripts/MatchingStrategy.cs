@@ -6,16 +6,16 @@ namespace Bipolar.Match3
 {
     public interface IMatchingStrategy
     {
-        PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IReadOnlyBoard board);
+        PiecesChain GetPiecesChain(Vector2Int startingCoord, IReadOnlyBoard board, Queue<Vector2Int> coordsQueue = null);
     }
 
     public abstract class MatchingStrategy : ScriptableObject, IMatchingStrategy
     {
-        protected abstract PiecesChain CreatePiecesChain(Piece startingPiece, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
+        protected abstract PiecesChain CreatePiecesChain(Vector2Int startingCoord, IReadOnlyBoard board, Queue<Vector2Int> coordsToCheck = null);
 
-        public PiecesChain GetPiecesChain(Queue<Vector2Int> coordsQueue, IReadOnlyBoard board)
+        public PiecesChain GetPiecesChain(Vector2Int startingCoord, IReadOnlyBoard board, Queue<Vector2Int> coordsQueue = null)
         {
-            return CreatePiecesChain(board[coordsQueue.Peek()], coordsQueue, board);
+            return CreatePiecesChain(startingCoord, board, coordsQueue);
         }
 
         public static bool TryEnqueueCoord(PiecesChain chain, Queue<Vector2Int> coordsQueue, Vector2Int coord)
@@ -34,18 +34,20 @@ namespace Bipolar.Match3
     public abstract class MatchingStrategy<T> : MatchingStrategy
         where T : PiecesChain, new()
     {
-        protected sealed override PiecesChain CreatePiecesChain(Piece startingPiece, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board)
+        protected sealed override PiecesChain CreatePiecesChain(Vector2Int startingPieceCoord, IReadOnlyBoard board, Queue<Vector2Int> coordsToCheck = null)
         {
-            var chain = CreatePiecesChain(startingPiece); 
+            coordsToCheck ??= new Queue<Vector2Int>();
+            var chain = CreatePiecesChain(startingPieceCoord, board[startingPieceCoord].Color);
+            coordsToCheck.Enqueue(startingPieceCoord);
             PopulatePiecesChain(chain, coordsToCheck, board);
             return chain;
         }
 
-        private static T CreatePiecesChain(Piece piece)
+        private static T CreatePiecesChain(Vector2Int startingCoord, IPieceColor pieceColor)
         {
             var chain = new T();
-            chain.PieceColor = piece.Color;
-            chain.StartingCoord = piece.Coord;
+            chain.PieceColor = pieceColor;
+            chain.StartingCoord = startingCoord;
             return chain;
         }
 

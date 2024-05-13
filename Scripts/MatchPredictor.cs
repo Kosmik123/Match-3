@@ -9,6 +9,8 @@ namespace Bipolar.Match3
         [SerializeField]
         private Matcher matcher;
 
+        private readonly List<PiecesChain> chainsBuffer = new List<PiecesChain>();
+
         public void FindPossibleChains()
         {
             var boardData = matcher.SceneBoard.GetBoardState();
@@ -23,24 +25,24 @@ namespace Bipolar.Match3
                 {
                     var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
                     if (boardData.ContainsCoord(otherCoord))
-                        CheckIfSwappingPieceCreatesMatches(coord, otherCoord, boardData);
+                        CheckIfSwappingPieceCreatesMatches(new CoordsPair(coord, otherCoord), boardData);
                 }
             }
         }
 
-        public void CheckIfSwappingPieceCreatesMatches(Vector2Int pieceCoord1, Vector2Int pieceCoord2, IBoard boardData)
+        public void CheckIfSwappingPieceCreatesMatches(CoordsPair coordsPair, IBoard board)
         {
-            (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
+            (board[coordsPair.firstCoord], board[coordsPair.secondCoord]) = (board[coordsPair.secondCoord], board[coordsPair.firstCoord]);
 
             var coordsQueue = new Queue<Vector2Int>();
-            foreach (var coord in boardData)
+            foreach (var coord in board)
             {
                 coordsQueue.Clear();
-                coordsQueue.Enqueue(coord);
-                matcher.MatchingStrategy.GetPiecesChain(coordsQueue, boardData);
+                //matcher.FindAndCreatePieceChains(chainsBuffer);
+               // matcher.MatchingStrategy.GetPiecesChain(coord, board, coordsQueue);
             }
-            
-            (boardData[pieceCoord1], boardData[pieceCoord2]) = (boardData[pieceCoord2], boardData[pieceCoord1]);
+
+            (board[coordsPair.secondCoord], board[coordsPair.firstCoord]) = (board[coordsPair.firstCoord], board[coordsPair.secondCoord]);
         }
     }
 }

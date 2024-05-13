@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public delegate void PiecesSwapEventHandler(Vector2Int pieceCoord1, Vector2Int pieceCoord2);
+    public delegate void PiecesSwapEventHandler(CoordsPair coords);
  
     public class SwapRequester : MonoBehaviour
     {
@@ -46,7 +46,7 @@ namespace Bipolar.Match3
             var otherTokenCoord = tokenCoord + direction;
             if (board.ContainsCoord(otherTokenCoord))
             {
-                RequestSwap(tokenCoord, otherTokenCoord);
+                RequestSwap(new CoordsPair(tokenCoord, otherTokenCoord));
             }
         }
 
@@ -60,7 +60,7 @@ namespace Bipolar.Match3
             if ((xDistance != 1 || yDistance != 0) && (xDistance != 0 || yDistance != 1))
                 return false;
 
-            RequestSwap(selectedPieceCoord, tokenCoord);
+            RequestSwap(new CoordsPair(selectedPieceCoord, tokenCoord));
             return true;
         }
 
@@ -71,10 +71,10 @@ namespace Bipolar.Match3
                 OnPieceSelected?.Invoke(selectedPieceCoord);
         }
 
-        private void RequestSwap(Vector2Int pieceCoord1, Vector2Int pieceCoord2)
+        private void RequestSwap(CoordsPair coordsPair)
         {
             SelectPiece(-Vector2Int.one);
-            OnSwapRequested?.Invoke(pieceCoord1, pieceCoord2);
+            OnSwapRequested?.Invoke(coordsPair);
         }    
 
         private void OnDisable()
