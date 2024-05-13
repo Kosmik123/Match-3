@@ -2,7 +2,7 @@
 
 namespace Bipolar.Match3
 {
-    public readonly struct CoordsPair
+    public readonly struct CoordsPair : System.IEquatable<CoordsPair>
     {
         public readonly Vector2Int firstCoord;
         public readonly Vector2Int secondCoord;
@@ -31,6 +31,16 @@ namespace Bipolar.Match3
                 return (coord2, coord1);
                 
             return (coord1, coord2);
+        }
+
+        public override int GetHashCode()
+        {
+            return firstCoord.GetHashCode() ^ secondCoord.GetHashCode();
+        }
+
+        public bool Equals(CoordsPair other)
+        {
+            return firstCoord.Equals(other.firstCoord) && secondCoord.Equals(other.secondCoord);
         }
     }
 }
