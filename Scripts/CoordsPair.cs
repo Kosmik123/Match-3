@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Bipolar.PuzzleBoard;
+using UnityEngine;
 
 namespace Bipolar.Match3
 {
@@ -41,6 +42,19 @@ namespace Bipolar.Match3
         public bool Equals(CoordsPair other)
         {
             return firstCoord.Equals(other.firstCoord) && secondCoord.Equals(other.secondCoord);
+        }
+    }
+
+    public static class BoardSwapExtension
+    {
+        public static void SwapPieces(this IBoard board, CoordsPair coordsPair)
+        {
+            board.SwapPieces(coordsPair.firstCoord, coordsPair.secondCoord);
+        }
+
+        public static void SwapPieces(this SceneBoard board, CoordsPair coordsPair)
+        {
+            board.SwapPieces(coordsPair.firstCoord, coordsPair.secondCoord);
         }
     }
 }

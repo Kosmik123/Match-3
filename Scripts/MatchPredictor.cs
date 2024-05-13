@@ -17,7 +17,7 @@ namespace Bipolar.Match3
 
             bool isHexagonal = boardData.Layout == GridLayout.CellLayout.Hexagon;
             var directions = BoardHelper.GetDirections(isHexagonal);
-            int directionsCount = directions.Count / 2; 
+            int directionsCount = directions.Count / 2;
 
             foreach (var coord in matcher.SceneBoard.Board)
             {
@@ -32,17 +32,17 @@ namespace Bipolar.Match3
 
         public void CheckIfSwappingPieceCreatesMatches(CoordsPair coordsPair, IBoard board)
         {
-            (board[coordsPair.firstCoord], board[coordsPair.secondCoord]) = (board[coordsPair.secondCoord], board[coordsPair.firstCoord]);
+            board.SwapPieces(coordsPair);
 
             var coordsQueue = new Queue<Vector2Int>();
             foreach (var coord in board)
             {
                 coordsQueue.Clear();
                 //matcher.FindAndCreatePieceChains(chainsBuffer);
-               // matcher.MatchingStrategy.GetPiecesChain(coord, board, coordsQueue);
+                // matcher.MatchingStrategy.GetPiecesChain(coord, board, coordsQueue);
             }
 
-            (board[coordsPair.secondCoord], board[coordsPair.firstCoord]) = (board[coordsPair.firstCoord], board[coordsPair.secondCoord]);
+            board.SwapPieces(coordsPair);
         }
     }
 }

@@ -115,7 +115,7 @@ namespace Bipolar.Match3
             var piece1 = sceneBoard.GetPiece(coords.firstCoord);
             var piece2 = sceneBoard.GetPiece(coords.secondCoord);
 
-            sceneBoard.SwapPieces(coords.firstCoord, coords.secondCoord);
+            sceneBoard.SwapPieces(coords);
 
             var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, coords.secondCoord, coords.firstCoord, piecesSwapManager);
             boardController.RequestCommand(swapPiecesCommand);
