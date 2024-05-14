@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Bipolar.Match3
 {
@@ -57,7 +58,7 @@ namespace Bipolar.Match3
 
             SwapPieces(coords);
             StartCoroutine(TryMatch(
-                onSuccess: null,
+                onSuccess: testMatchPredictor.FindPossibleChains,
                 onFail: () => SwapPieces(coords),
                 coords.firstCoord, coords.secondCoord));
         }
@@ -82,7 +83,6 @@ namespace Bipolar.Match3
             var action = success ? onSuccess : onFail;
             action?.Invoke();
         }
-
 
         // to powinno znaleźć się w osobnej klasie która zarządza tworzeniem bomb w rzędach od długości 4+
         private void ClearChains(IReadOnlyList<PiecesChain> chains)

@@ -26,12 +26,17 @@ namespace Bipolar.Match3
                 return (coord2, coord1);
 
             if (coord1.y < coord2.y)
-                return (coord1, coord2);    
-            
+                return (coord1, coord2);
+
             if (coord2.x < coord1.x)
                 return (coord2, coord1);
-                
+
             return (coord1, coord2);
+        }
+
+        public bool Contains(Vector2Int coord)
+        {
+            return firstCoord == coord || secondCoord == coord;
         }
 
         public override int GetHashCode()
@@ -43,6 +48,8 @@ namespace Bipolar.Match3
         {
             return firstCoord.Equals(other.firstCoord) && secondCoord.Equals(other.secondCoord);
         }
+
+        public override string ToString() => $"{firstCoord} and {secondCoord}";
     }
 
     public static class BoardSwapExtension

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Bipolar.PuzzleBoard;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Bipolar.Match3
@@ -12,6 +13,9 @@ namespace Bipolar.Match3
         private Matcher _matcher;
         protected IMatcher Matcher => _matcher;
 
+        [SerializeField]
+        private SceneBoard sceneBoard;
+
         private readonly List<PiecesChain> chainList = new List<PiecesChain>();
         public IReadOnlyList<PiecesChain> Chains => chainList;
 
@@ -22,7 +26,7 @@ namespace Bipolar.Match3
 
         public bool FindMatches(System.ReadOnlySpan<Vector2Int> startingCoords)
         {
-            Matcher.FindAndCreatePieceChains(chainList, startingCoords);
+            Matcher.FindAndCreatePieceChains(sceneBoard.Board, chainList, startingCoords);
             foreach (var chain in chainList)
             {
                 OnPiecesMatched?.Invoke(chain); 
@@ -38,7 +42,7 @@ namespace Bipolar.Match3
             {
                 var color = Color.HSVToRGB(Random.value, 1, 1);
                 color.a = 0.5f;
-                chain.DrawDebug(_matcher.SceneBoard, color, 2);
+                chain.DrawDebug(sceneBoard, color, 2);
             }
             Random.state = previousRandomState;
 #endif
