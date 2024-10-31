@@ -94,6 +94,10 @@ namespace Bipolar.Match3
         public static void AddSquareToChain(TriosWithSquaresPiecesChain chain, Vector2Int bottomLeftCoord)
         {
             chain.AddSquare(bottomLeftCoord);
+            chain.Add(bottomLeftCoord);
+            chain.Add(bottomLeftCoord + Vector2Int.right);
+            chain.Add(bottomLeftCoord + Vector2Int.up);
+            chain.Add(bottomLeftCoord + Vector2Int.one);
         }
     }
 
