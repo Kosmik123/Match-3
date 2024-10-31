@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Bipolar.Match3
 {
+    public abstract class ChainsProcessor : MonoBehaviour
+    {
+        public abstract void ProcessChains(IEnumerable<PiecesChain> chains);
+    }
 
     public class MatchingManager : MonoBehaviour
     {
@@ -16,13 +19,13 @@ namespace Bipolar.Match3
         [SerializeField]
         private MatchController matchController;
         [SerializeField]
-        private PiecesClearManager piecesClearManager;
-        [SerializeField]
         private BoardCollapseController boardCollapseController;
         [SerializeField]
         private SceneBoard sceneBoard;
         [SerializeField]
         private PiecesSwapManager piecesSwapManager;
+        [SerializeField]
+        private BoardShufflerWrapper shufflerWrapper;
 
         [SerializeField]
         private int combo;
@@ -31,12 +34,14 @@ namespace Bipolar.Match3
         [SerializeField]
         private MatchPredictor testMatchPredictor;
 
+        [SerializeField]
+        private ChainsProcessor[] piecesChainProcessors; 
+
         protected virtual void Reset()
         {
             boardController = FindObjectOfType<BoardController>();
             swapRequester = FindObjectOfType<SwapRequester>();
             matchController = FindObjectOfType<MatchController>();
-            piecesClearManager = FindObjectOfType<PiecesClearManager>();
         }
 
         private void OnEnable()
@@ -44,10 +49,10 @@ namespace Bipolar.Match3
             swapRequester.OnSwapRequested += SwapManager_OnSwapRequested;
         }
 
-        private IEnumerator Start()
+        private void Start()
         {
             boardCollapseController.Collapse();
-            yield return TryMatch();
+            MatchPieces();
         }
 
         private void SwapManager_OnSwapRequested(CoordsPair coords)
@@ -56,14 +61,67 @@ namespace Bipolar.Match3
             if (boardController.IsBusy)
                 return;
 
-            SwapPieces(coords);
-            StartCoroutine(TryMatch(
-                onSuccess: testMatchPredictor.FindPossibleChains,
-                onFail: () => SwapPieces(coords),
-                coords.firstCoord, coords.secondCoord));
+            TrySwap(coords);
         }
 
-        private IEnumerator TryMatch(System.Action onSuccess = null, System.Action onFail = null, params Vector2Int[] coords)
+        private void TrySwap(CoordsPair coords)
+        {
+            SwapPieces(coords);
+            MatchPieces(
+                onFail: () => SwapPieces(coords),
+                coords.firstCoord, coords.secondCoord);
+        }
+
+        private void FindPossibleMatches()
+        {
+            var matches = new Dictionary<CoordsPair, List<PiecesChain>>();
+            testMatchPredictor.FindPossibleChains(matches);
+            if (matches.Count == 0)
+            {
+                ShuffleBoard();
+            }
+        }
+
+        private void ShuffleBoard()
+        {
+            Debug.LogWarning("No matches possible!");
+            shufflerWrapper.ShufflePieces();
+            MatchPieces(FindPossibleMatches);
+        }
+
+        public readonly struct SwapSignalCommand : IBoardCommand
+        {
+            private readonly CoordsPair coordsPair;
+            private readonly SwapRequester swapRequester;
+
+            public SwapSignalCommand(CoordsPair coordsPair, SwapRequester swapRequester)
+            {
+                if (coordsPair.firstCoord == coordsPair.secondCoord)
+                {
+                    Debug.LogError("!!!");
+                }
+                this.coordsPair = coordsPair;
+                this.swapRequester = swapRequester;
+            }
+
+            public IEnumerator Execute()
+            {
+                swapRequester.RequestSwap(coordsPair);
+                yield return null;
+            }
+
+            public override string ToString()
+            {
+                return $"Request to swap {coordsPair.firstCoord} and {coordsPair.secondCoord}";
+            }
+        }
+
+        private void MatchPieces(System.Action onFail = null, params Vector2Int[] coords)
+        {
+            StartCoroutine(MatchPiecesCo(FindPossibleMatches, onFail, coords));
+        }
+
+        private IEnumerator MatchPiecesCo(System.Action onSuccess = null, System.Action onFail = null, params Vector2Int[] coords)
         {
             combo = 0;
             bool success = false;
@@ -75,7 +133,7 @@ namespace Bipolar.Match3
                     break;
 
                 success = true;
-                ClearChains(matchController.Chains);
+                ProcessChains(matchController.Chains);
                 boardCollapseController.Collapse();
                 yield return null;
             }
@@ -85,35 +143,22 @@ namespace Bipolar.Match3
         }
 
         // to powinno znaleźć się w osobnej klasie która zarządza tworzeniem bomb w rzędach od długości 4+
-        private void ClearChains(IReadOnlyList<PiecesChain> chains)
+
+        // Tak, to będzie oddzielny behavior do ustawienia w inspektorze,
+        // który ustala w jakis sposób i co się dzieje przy niszczeniu pionków
+        // nazywa się on ChainProcessor
+        private void ProcessChains(IReadOnlyList<PiecesChain> chains)
         {
-            var piecesToClear = new List<Piece>();
-            foreach (var chain in chains)
-            {
-                foreach (var coord in chain.PiecesCoords)
-                {
-                    piecesToClear.Add(sceneBoard.GetPiece(coord));
-                }
-            }
-
-            ClearPieces(piecesToClear);
-        }
-
-        private void ClearPieces(IReadOnlyList<Piece> pieces)
-        {
-            foreach (var piece in pieces)
-                piece.ClearPiece();
-
-            var command = new ClearPiecesCommand(pieces, piecesClearManager);
-            boardController.RequestCommand(command);
+            foreach (var processor in piecesChainProcessors)
+                processor.ProcessChains(chains);
         }
 
         private void SwapPieces(CoordsPair coords)
         {
             Debug.Log($"Pieces at {coords.firstCoord} and {coords.secondCoord} swapped");
 
-            var piece1 = sceneBoard.GetPiece(coords.firstCoord);
-            var piece2 = sceneBoard.GetPiece(coords.secondCoord);
+            var piece1 = sceneBoard.Board[coords.firstCoord];
+            var piece2 = sceneBoard.Board[coords.secondCoord];
 
             sceneBoard.SwapPieces(coords);
 

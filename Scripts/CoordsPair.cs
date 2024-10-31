@@ -1,9 +1,10 @@
 ﻿using Bipolar.PuzzleBoard;
+using System;
 using UnityEngine;
 
 namespace Bipolar.Match3
 {
-    public readonly struct CoordsPair : System.IEquatable<CoordsPair>
+    public readonly struct CoordsPair : IEquatable<CoordsPair>
     {
         public readonly Vector2Int firstCoord;
         public readonly Vector2Int secondCoord;
@@ -12,7 +13,7 @@ namespace Bipolar.Match3
         {
             0 => firstCoord,
             1 => secondCoord,
-            _ => throw new System.IndexOutOfRangeException(),
+            _ => throw new IndexOutOfRangeException(),
         };
 
         public CoordsPair(Vector2Int coord1, Vector2Int coord2)
@@ -46,7 +47,8 @@ namespace Bipolar.Match3
 
         public bool Equals(CoordsPair other)
         {
-            return firstCoord.Equals(other.firstCoord) && secondCoord.Equals(other.secondCoord);
+            return firstCoord.Equals(other.firstCoord) && secondCoord.Equals(other.secondCoord)
+                || firstCoord.Equals(other.secondCoord) && secondCoord.Equals(other.firstCoord);
         }
 
         public override string ToString() => $"{firstCoord} and {secondCoord}";

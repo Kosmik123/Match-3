@@ -5,18 +5,19 @@ using UnityEngine.Pool;
 
 namespace Bipolar.Match3
 {
-    public class MatchPredictor : MonoBehaviour
+    public abstract class MatchPredictor : MonoBehaviour
     {
+        public abstract void FindPossibleChains(Dictionary<CoordsPair, List<PiecesChain>> possibleChainsObtainedBySwapping);
+    }
+
+    public class DefaultMatchPredictor : MatchPredictor
+    {   
         [SerializeField]
         private Matcher matcher;
         [SerializeField]
         private SceneBoard sceneBoard;
 
-        //private readonly List<PiecesChain> chainsBuffer = new List<PiecesChain>();
-
-        private readonly Dictionary<CoordsPair, List<PiecesChain>> possibleChainsObtainedBySwapping = new Dictionary<CoordsPair, List<PiecesChain>>();
-
-        public void FindPossibleChains()
+        public override void FindPossibleChains(Dictionary<CoordsPair, List<PiecesChain>> possibleChainsObtainedBySwapping)
         {
             var boardData = sceneBoard.GetBoardState();
 
@@ -36,14 +37,12 @@ namespace Bipolar.Match3
                     Board.Copy(sceneBoard.Board, boardData);
                     var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);
                     if (boardData.ContainsCoord(otherCoord))
-                        CheckIfSwappingPieceCreatesMatches(boardData, new CoordsPair(coord, otherCoord));
+                        CheckIfSwappingPieceCreatesMatches(boardData, new CoordsPair(coord, otherCoord), possibleChainsObtainedBySwapping);
                 }
             }
-            if (possibleChainsObtainedBySwapping.Count == 0)
-                Debug.LogError("No matches possible!");
         }
 
-        private void CheckIfSwappingPieceCreatesMatches(IBoard board, CoordsPair swappedCoords)
+        private void CheckIfSwappingPieceCreatesMatches(IBoard board, CoordsPair swappedCoords, Dictionary<CoordsPair, List<PiecesChain>> possibleChainsObtainedBySwapping)
         {
             board.SwapPieces(swappedCoords);
 
@@ -53,10 +52,6 @@ namespace Bipolar.Match3
             matcher.FindAndCreatePieceChains(board, chainsList, stackalloc Vector2Int[] {swappedCoords.firstCoord, swappedCoords.secondCoord});
             if (chainsList.Count > 0) 
             {
-                //string message = $"If you swap {swappedCoords} you will get matches:";
-                //foreach (var chain in chainsList)
-                //    message += $"\n\t{chain}";
-                //Debug.Log(message);
                 possibleChainsObtainedBySwapping.Add(swappedCoords, chainsList);
             }
             else

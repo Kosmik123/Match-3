@@ -71,7 +71,7 @@ namespace Bipolar.Match3
                 OnPieceSelected?.Invoke(selectedPieceCoord);
         }
 
-        private void RequestSwap(CoordsPair coordsPair)
+        public void RequestSwap(CoordsPair coordsPair)
         {
             SelectPiece(-Vector2Int.one);
             OnSwapRequested?.Invoke(coordsPair);
