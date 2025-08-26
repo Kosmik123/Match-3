@@ -49,7 +49,7 @@ namespace Bipolar.Match3
             DragDetectionDistance = DragDetectionDistance;
         }
 
-        public void OnDrag(PointerEventData eventData)
+        void IDragHandler.OnDrag(PointerEventData eventData)
         {
             if (hasDragged)
                 return;
@@ -73,7 +73,7 @@ namespace Bipolar.Match3
             }
         }
 
-        public void OnEndDrag(PointerEventData eventData)
+        void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             if (hasDragged)
             {

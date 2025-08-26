@@ -35,7 +35,7 @@ namespace Bipolar.Match3
         private MatchPredictor testMatchPredictor;
 
         [SerializeField]
-        private ChainsProcessor[] piecesChainProcessors; 
+        private ChainsProcessor[] piecesChainProcessors;
 
         protected virtual void Reset()
         {
@@ -66,6 +66,12 @@ namespace Bipolar.Match3
 
         private void TrySwap(CoordsPair coords)
         {
+            if (sceneBoard.ContainsCoord(coords.firstCoord) == false)
+                return;
+
+            if (sceneBoard.ContainsCoord(coords.secondCoord) == false)
+                return;
+
             SwapPieces(coords);
             MatchPieces(
                 onFail: () => SwapPieces(coords),
