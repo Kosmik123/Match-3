@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Bipolar.Match3
+namespace Bipolar.Match3.MatchingStrategies
 {
     public class TriosWithSquaresPiecesChain : TriosPiecesChain
     {
@@ -38,7 +38,7 @@ namespace Bipolar.Match3
         }
     }
 
-    public class TriosWithSquaresMatchingStrategy : MatchingStrategy<TriosWithSquaresPiecesChain>
+    public class TriosWithSquares : MatchingStrategy<TriosWithSquaresPiecesChain>
     {
         public override void PopulatePiecesChain(TriosWithSquaresPiecesChain chain, Queue<Vector2Int> coordsQueue, IReadOnlyBoard board)
         {
@@ -49,7 +49,7 @@ namespace Bipolar.Match3
                 chain.Add(pieceCoord);
                 foreach (var direction in BoardHelper.GetDirections(board.Layout))
                 {
-                    TriosMatchingStrategy.TryAddLineToChain(board, chain, pieceCoord, direction, coordsQueue, isHexagonal);
+                    Trios.TryAddLineToChain(board, chain, pieceCoord, direction, coordsQueue, isHexagonal);
                 }
 
                 if (isHexagonal == false) 

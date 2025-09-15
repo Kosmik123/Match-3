@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Bipolar.Match3
+namespace Bipolar.Match3.MatchingStrategies
 {
-    public class TriosPiecesChain : PiecesChain
+	public class TriosPiecesChain : PiecesChain
     {
         private readonly HashSet<Vector2Int> horizontalTrios = new HashSet<Vector2Int>();
         private readonly HashSet<Vector2Int> verticalTrios = new HashSet<Vector2Int>();
@@ -54,7 +54,7 @@ namespace Bipolar.Match3
         }
     }
 
-    public class TriosMatchingStrategy : MatchingStrategy<TriosPiecesChain>
+    public class Trios : MatchingStrategy<TriosPiecesChain>
     {
         public override void PopulatePiecesChain(TriosPiecesChain chain, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board)
         {

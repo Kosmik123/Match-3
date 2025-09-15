@@ -23,7 +23,7 @@ namespace Bipolar.Match3
 
             bool isHexagonal = boardData.Layout == GridLayout.CellLayout.Hexagon;
             var directions = BoardHelper.GetDirections(isHexagonal);
-            int directionsCount = directions.Count / 2;
+            int axisCount = directions.Count / 2;
 
             foreach (var chainsList in possibleChainsObtainedBySwapping.Values) 
                 ListPool<PiecesChain>.Release(chainsList);
@@ -32,7 +32,7 @@ namespace Bipolar.Match3
 
             foreach (var coord in sceneBoard.Board)
             {
-                for (int dirIndex = 0; dirIndex < directionsCount; dirIndex++)
+                for (int dirIndex = 0; dirIndex < axisCount; dirIndex++)
                 {
                     Board.Copy(sceneBoard.Board, boardData);
                     var otherCoord = coord + BoardHelper.GetCorrectedDirection(coord, directions[dirIndex], isHexagonal);

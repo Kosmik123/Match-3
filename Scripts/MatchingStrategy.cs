@@ -31,8 +31,8 @@ namespace Bipolar.Match3
         }
     }
 
-    public abstract class MatchingStrategy<T> : MatchingStrategy
-        where T : PiecesChain, new()
+    public abstract class MatchingStrategy<TChain> : MatchingStrategy
+        where TChain : PiecesChain, new()
     {
         protected sealed override PiecesChain CreatePiecesChain(Vector2Int startingPieceCoord, IReadOnlyBoard board, Queue<Vector2Int> coordsToCheck = null)
         {
@@ -43,14 +43,14 @@ namespace Bipolar.Match3
             return chain;
         }
 
-        private static T CreatePiecesChain(Vector2Int startingCoord, IPieceColor pieceColor)
+        private static TChain CreatePiecesChain(Vector2Int startingCoord, IPieceColor pieceColor)
         {
-            var chain = new T();
+            var chain = new TChain();
             chain.PieceColor = pieceColor;
             chain.StartingCoord = startingCoord;
             return chain;
         }
 
-        public abstract void PopulatePiecesChain(T chain, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
+        public abstract void PopulatePiecesChain(TChain chain, Queue<Vector2Int> coordsToCheck, IReadOnlyBoard board);
     }
 }

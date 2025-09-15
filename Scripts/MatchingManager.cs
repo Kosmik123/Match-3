@@ -12,9 +12,9 @@ namespace Bipolar.Match3
 
     public class MatchingManager : MonoBehaviour
     {
-        [SerializeField]
-        private BoardController boardController;
-        [SerializeField]
+        [SerializeField, NewObjectButton(ObjectCreationType.AddComponent)]
+        private Serialized<IBoardCommandsInvoker> boardController;
+        [SerializeField, RequireInterface(typeof(SwapRequester), ObjectCreationType.AddComponent)]
         private SwapRequester swapRequester;
         [SerializeField]
         private MatchController matchController;
@@ -39,7 +39,7 @@ namespace Bipolar.Match3
 
         protected virtual void Reset()
         {
-            boardController = FindObjectOfType<BoardController>();
+            boardController.Value = FindObjectOfType<BoardController>();
             swapRequester = FindObjectOfType<SwapRequester>();
             matchController = FindObjectOfType<MatchController>();
         }
@@ -57,8 +57,8 @@ namespace Bipolar.Match3
 
         private void SwapManager_OnSwapRequested(CoordsPair coords)
         {
-            Debug.Log($"Swap of {coords.firstCoord} and {coords.secondCoord} requested");
-            if (boardController.IsBusy)
+            //Debug.Log($"Swap of {coords.firstCoord} and {coords.secondCoord} requested");
+            if (boardController.Value.IsBusy)
                 return;
 
             TrySwap(coords);
@@ -80,6 +80,7 @@ namespace Bipolar.Match3
 
         private void FindPossibleMatches()
         {
+            //return;
             var matches = new Dictionary<CoordsPair, List<PiecesChain>>();
             testMatchPredictor.FindPossibleChains(matches);
             if (matches.Count == 0)
@@ -161,7 +162,7 @@ namespace Bipolar.Match3
 
         private void SwapPieces(CoordsPair coords)
         {
-            Debug.Log($"Pieces at {coords.firstCoord} and {coords.secondCoord} swapped");
+            //Debug.Log($"Pieces at {coords.firstCoord} and {coords.secondCoord} swapped");
 
             var piece1 = sceneBoard.Board[coords.firstCoord];
             var piece2 = sceneBoard.Board[coords.secondCoord];
@@ -169,7 +170,7 @@ namespace Bipolar.Match3
             sceneBoard.SwapPieces(coords);
 
             var swapPiecesCommand = new SwapPiecesCommand(piece1, piece2, coords.secondCoord, coords.firstCoord, piecesSwapManager);
-            boardController.RequestCommand(swapPiecesCommand);
+            boardController.Value.RequestCommand(swapPiecesCommand);
         }
 
         private void OnDisable()

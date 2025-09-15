@@ -1,9 +1,9 @@
 {
     "name": "Bipolar.Match-3",
-    "rootNamespace": "",
+    "rootNamespace": "Bipolar.Match3",
     "references": [
         "GUID:845c7c8f47d74cd40aaa8ee6081b9658",
-        "GUID:2ecd41d6ad0cd0748ab7fbaa1a919610"
+        "GUID:f15f1bd6373976940afc9cb47227de81"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

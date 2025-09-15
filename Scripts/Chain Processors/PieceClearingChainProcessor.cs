@@ -27,11 +27,11 @@ namespace Bipolar.Match3
             clearedPieces.Clear();
             foreach (var chain in chains)
             {
-                if (chain is TriosWithSquaresPiecesChain squaresChain && squaresChain.SquaresCount > 0)
+                // its wrong. It should be changed in the future
+                if (chain is MatchingStrategies.TriosWithSquaresPiecesChain squaresChain && squaresChain.SquaresCount > 0)
                 {
                     var squareBombPieceCoord = squaresChain.StartingCoord;
                 }
-
 
                 foreach (var coord in chain.PiecesCoords)
                 {
